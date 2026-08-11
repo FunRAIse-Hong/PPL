@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PPL 訓練記錄</title>
+<style>
+  :root{
+    --ink:#0F1216; --panel:#171B21; --panel-2:#1D222A; --line:#2A313B;
+    --text:#E9ECF1; --dim:#8A94A2; --dimmer:#5C6675; --day:#1E63D8;
+    --mono: ui-monospace,"SF Mono","JetBrains Mono","Roboto Mono",Menlo,monospace;
+    --sans: -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--sans);font-size:16px;
+       line-height:1.5;padding:0 0 100px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:640px;margin:0 auto;padding:0 16px}
+
+  header{padding:24px 0 12px}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--dimmer);text-transform:uppercase}
+  h1{font-size:26px;line-height:1.15;margin:6px 0 0;letter-spacing:-.02em;font-weight:800}
+  .sub{color:var(--dim);font-size:13px;margin-top:6px}
+
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 4px}
+  .tab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 8px 11px;
+       text-align:center;cursor:pointer;position:relative;overflow:hidden;font-family:inherit;color:var(--dim);
+       transition:border-color .15s,background .15s}
+  .tab::before{content:"";position:absolute;inset:auto 0 0 0;height:3px;background:var(--c);opacity:.35;transition:opacity .15s,height .15s}
+  .tab[aria-selected="true"]{background:var(--panel-2);border-color:var(--c);color:var(--text)}
+  .tab[aria-selected="true"]::before{opacity:1;height:4px}
+  .tab .l{font-family:var(--mono);font-size:11px;letter-spacing:.14em;display:block;color:var(--dimmer)}
+  .tab[aria-selected="true"] .l{color:var(--c)}
+  .tab .n{font-size:19px;font-weight:800;letter-spacing:.06em}
+  .tab .g{font-size:11px;color:var(--dimmer);display:block;margin-top:1px}
+
+  .daterow{display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px;gap:12px}
+  .daterow label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--dimmer)}
+  input[type=date]{background:var(--panel);border:1px solid var(--line);color:var(--text);
+       border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:14px}
+
+  .ex{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:10px 0;
+      overflow:hidden;border-left:3px solid var(--day)}
+  .ex-h{display:flex;gap:12px;padding:14px 14px 8px;align-items:flex-start}
+  .mach{width:92px;height:72px;flex:0 0 92px;background:#12161C;border:1px solid var(--line);border-radius:8px}
+  .ex-t{flex:1;min-width:0}
+  .ex-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .ex-zh{font-weight:700;font-size:16px;letter-spacing:-.01em}
+  .ex-en{font-family:var(--mono);font-size:11px;color:var(--dimmer);letter-spacing:.04em;margin-top:2px}
+  .ex-target{font-family:var(--mono);font-size:12px;color:var(--dim);white-space:nowrap}
+  .ex-id{font-size:12.5px;color:var(--dim);margin-top:7px;line-height:1.45}
+  .ex-id b{color:var(--day);font-weight:600}
+
+  .prev{padding:2px 14px 10px;font-family:var(--mono);font-size:12px;color:var(--dimmer);
+        display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .prev b{color:var(--dim);font-weight:400}
+  .delta{display:inline-block;padding:1px 7px;border-radius:20px;font-size:11px;border:1px solid var(--line);color:var(--dimmer)}
+  .delta.up{color:#5BE59A;border-color:#2C6B47;background:#12281C}
+  .delta.same{color:var(--dim)}
+  .delta.down{color:#FF9B87;border-color:#6B3A2C}
+
+  .col-h{display:grid;grid-template-columns:26px 1fr 1fr;gap:8px;padding:0 14px 6px}
+  .col-h span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--dimmer)}
+  .sets{padding:0 14px 12px;display:grid;gap:7px}
+  .set{display:grid;grid-template-columns:26px 1fr 1fr;gap:8px;align-items:center}
+  .set-n{font-family:var(--mono);font-size:11px;color:var(--dimmer)}
+  .field{position:relative}
+  .field input{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+       padding:11px 34px 11px 11px;color:var(--text);font-family:var(--mono);font-size:16px}
+  .field input:focus{outline:none;border-color:var(--day);background:#20262F}
+  .field input::placeholder{color:#3F4855}
+  .field .u{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:var(--mono);
+       font-size:11px;color:var(--dimmer);pointer-events:none}
+
+  details.alt{border-top:1px solid var(--line);background:#14181E}
+  details.alt summary{list-style:none;cursor:pointer;padding:10px 14px;font-family:var(--mono);
+       font-size:11px;letter-spacing:.12em;color:var(--dim);display:flex;justify-content:space-between;align-items:center}
+  details.alt summary::-webkit-details-marker{display:none}
+  details.alt summary::after{content:"＋";color:var(--dimmer)}
+  details.alt[open] summary::after{content:"−"}
+  .alt-body{padding:0 14px 14px;font-size:13.5px;color:var(--dim)}
+  .alt-body ul{margin:0;padding-left:18px}
+  .alt-body li{margin:0 0 5px}
+  .alt-body .why{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--dimmer)}
+
+  .savebar{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,var(--ink) 70%,transparent);
+       padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
+  .savebar .inner{max-width:640px;margin:0 auto;display:flex;gap:10px}
+  button.save{flex:1;background:var(--day);color:#fff;border:none;border-radius:10px;padding:15px;
+       font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.02em}
+  button.ghost{background:var(--panel);color:var(--dim);border:1px solid var(--line);border-radius:10px;
+       padding:15px 16px;font-family:var(--mono);font-size:12px;cursor:pointer}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:var(--panel-2);
+       border:1px solid var(--day);color:var(--text);padding:10px 18px;border-radius:999px;font-size:13px;
+       opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s}
+  .toast.show{opacity:1;bottom:104px}
+
+  .banner{margin:14px 0 0;padding:11px 13px;border:1px solid #6B5A2C;background:#241E12;
+       border-radius:10px;font-size:13px;color:#E5C97A;line-height:1.5;white-space:pre-wrap}
+  .hist-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .hist-head h2{margin:0}
+  .mini{background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:8px;
+       padding:7px 12px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;cursor:pointer}
+  .dump{width:100%;margin-top:8px;background:var(--panel-2);border:1px solid var(--line);
+       border-radius:8px;color:var(--dim);font-family:var(--mono);font-size:12px;padding:10px;resize:vertical}
+  .autorow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 10px;
+       font-size:12.5px;color:var(--dim);cursor:pointer}
+  .autorow input{accent-color:var(--day);width:16px;height:16px}
+  .syncstat{font-family:var(--mono);font-size:11px;color:var(--dimmer);margin-left:auto;text-align:right}
+  .syncstat.busy{color:var(--day)}
+  .syncstat.ok{color:#5BE59A}
+  .syncstat.bad{color:#FF9B87}
+  .hist{margin:22px 0 0}
+  .hist h2{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dimmer);font-weight:400;
+       text-transform:uppercase;margin:0 0 8px}
+  .hist-item{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:11px 13px;
+       margin-bottom:7px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .hist-item .d{color:var(--text);font-size:13px;margin-bottom:4px}
+  .empty{color:var(--dimmer);font-size:13px;padding:14px 0}
+
+  .foot{margin:26px 0 0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);
+       font-size:13px;color:var(--dim)}
+  .foot h3{font-size:13px;margin:0 0 8px;color:var(--text)}
+  .foot ul{margin:0;padding-left:18px}
+  .foot li{margin-bottom:5px}
+  .loading{color:var(--dimmer);font-family:var(--mono);font-size:12px;padding:20px 0}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:360px){.mach{width:76px;flex:0 0 76px;height:62px}}
+  /* ---- 登入畫面 ---- */
+  .gate{max-width:380px;margin:14vh auto;padding:0 20px;text-align:center}
+  .gate h1{font-size:24px;margin:0 0 6px}
+  .gate p{color:var(--dim);font-size:13.5px;margin:0 0 22px;line-height:1.6}
+  .gate input{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+       padding:14px;color:var(--text);font-size:16px;font-family:inherit;margin-bottom:10px}
+  .gate input:focus{outline:none;border-color:var(--day)}
+  .gate button{width:100%;background:var(--day);color:#fff;border:none;border-radius:10px;
+       padding:14px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer}
+  .gate button:disabled{opacity:.5}
+  .gate .msg{margin-top:14px;font-size:13px;color:var(--dim);line-height:1.6;min-height:20px}
+  .gate .msg.ok{color:#5BE59A}
+  .gate .msg.bad{color:#FF9B87}
+  .who{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;
+       color:var(--dimmer);margin-top:8px}
+  .who button{background:none;border:none;color:var(--dim);font-family:var(--mono);font-size:11px;
+       text-decoration:underline;cursor:pointer;padding:0}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="ar" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
+    <path d="M0,0 L6,3 L0,6 Z" fill="var(--day)"/>
+  </marker>
+</defs></svg>
+
+<!-- 登入畫面 -->
+<div class="gate" id="gate" hidden>
+  <h1>訓練記錄</h1>
+  <p>輸入 Email，我們寄一個登入連結給你。<br>不用設密碼，點信裡的連結就進得來。</p>
+  <input type="email" id="email" placeholder="you@example.com" autocomplete="email" inputmode="email">
+  <button id="sendlink">寄登入連結</button>
+  <div class="msg" id="gatemsg"></div>
+</div>
+
+<!-- 主畫面 -->
+<div id="app" hidden>
+  <div class="wrap">
+    <header>
+      <div class="kicker">90-DAY / PUSH · PULL · LEGS</div>
+      <h1>訓練記錄表</h1>
+      <div class="sub">先看「上次」的數字，再決定今天填多少。</div>
+      <div class="who"><span id="whoami"></span><button id="logout">登出</button></div>
+    </header>
+
+    <div id="banner" class="banner" hidden></div>
+    <div class="tabs" role="tablist" id="tabs"></div>
+
+    <div class="daterow">
+      <label for="date">訓練日期</label>
+      <input type="date" id="date">
+    </div>
+
+    <div id="list"><div class="loading">載入中…</div></div>
+
+    <div class="hist">
+      <div class="hist-head">
+        <h2>這天的歷史紀錄</h2>
+        <span class="syncstat" id="syncstat"></span>
+      </div>
+      <div id="hist"></div>
+    </div>
+
+    <div class="foot">
+      <h3>認機器的三個問題</h3>
+      <ul>
+        <li><b>坐的方向？</b>面向椅背還是背靠椅背 —— 蝴蝶機和反向蝴蝶機常是同一台，只差在這裡。</li>
+        <li><b>墊子壓在哪？</b>大腿上方、腳踝後方、大腿外側，位置決定它練哪裡。</li>
+        <li><b>往哪個方向出力？</b>推出去、拉回來、往上、往外，這個不會因廠牌改變。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="savebar"><div class="inner">
+    <button class="save" id="save">儲存這次訓練</button>
+    <button class="ghost" id="clear">清空</button>
+  </div></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+/* ===== 只要改這兩行 =====
+   到 Supabase 後台 → Project Settings → API 複製過來。
+   anon key 是設計成可以公開的，安全性靠 RLS，不是靠藏這把金鑰。 */
+const SUPABASE_URL = "https://yxhumjdrutbizlltrdom.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_IjdaM39FK1Ro7p2FekSSPw_w9ZxXlmb";
+/* ======================== */
+
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const G="#4A5462", H="#98A2B0", D="var(--day)";
+
+/* 器械示意圖：灰色是機器，藍/黃/綠是「會動的部位」與出力方向 */
+function svg(inner){
+  return '<svg class="mach" viewBox="0 0 130 100" fill="none" stroke-linecap="round" '+
+    'stroke-linejoin="round" aria-hidden="true">'+inner+'</svg>';
+}
+const seatedRight =  /* 側面：人朝右坐 */
+  '<circle cx="40" cy="30" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M42,37 L46,62" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M46,62 H70 M70,62 V82" stroke="'+H+'" stroke-width="2.5"/>';
+const base = '<path d="M8,90 H122" stroke="'+G+'" stroke-width="2.5"/>';
+const stack = '<path d="M104,36 h16 v48 h-16 z M104,46 h16 M104,56 h16 M104,66 h16" stroke="'+G+'" stroke-width="2"/>';
+
+const ICONS = {
+chestPress: svg(base+stack+
+  '<path d="M100,90 V22" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M44,66 H74 M44,66 L39,40" stroke="'+G+'" stroke-width="2.5"/>'+
+  seatedRight+
+  '<path d="M43,45 H64" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<circle cx="67" cy="45" r="4" stroke="'+D+'" stroke-width="2.5"/>'+
+  '<path d="M71,45 H96 V26" stroke="'+D+'" stroke-width="2.5"/>'+
+  '<path d="M74,58 H96" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+shoulderPress: svg(base+stack+
+  '<path d="M100,90 V22" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M44,66 H74 M44,66 L41,38" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<circle cx="42" cy="30" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M44,37 L48,62 M48,62 H72 M72,62 V82" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M46,42 L56,22" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<circle cx="58" cy="19" r="4" stroke="'+D+'" stroke-width="2.5"/>'+
+  '<path d="M62,19 H96 V32" stroke="'+D+'" stroke-width="2.5"/>'+
+  '<path d="M76,44 V24" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+pecDeck: svg( /* 上視圖：手往身體前方夾 */
+  '<circle cx="65" cy="26" r="8" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M65,34 V60 M48,62 H82" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M58,40 L32,46 M72,40 L98,46" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M24,36 v22 M106,36 v22" stroke="'+G+'" stroke-width="3"/>'+
+  '<path d="M28,74 Q46,86 60,80" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'+
+  '<path d="M102,74 Q84,86 70,80" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+pushdown: svg(base+stack+
+  '<path d="M98,90 V20" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<circle cx="98" cy="16" r="5" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M98,21 V42" stroke="'+D+'" stroke-width="2"/>'+
+  '<path d="M84,42 H112" stroke="'+D+'" stroke-width="4"/>'+
+  '<circle cx="52" cy="26" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M52,32 V62 M52,62 L44,88 M52,62 L60,88" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M54,38 L84,42" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M72,54 V78" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+latPulldown: svg(base+stack+
+  '<path d="M100,90 V18" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<circle cx="100" cy="14" r="5" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M96,16 L60,24" stroke="'+D+'" stroke-width="2"/>'+
+  '<path d="M38,24 H80" stroke="'+D+'" stroke-width="4"/>'+
+  '<path d="M42,66 H70 M46,54 H68" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<circle cx="42" cy="38" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M44,45 L46,64 M46,64 H70 M70,64 V82" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M45,46 L48,26 M52,46 L56,26" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M88,34 V58" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+seatedRow: svg(base+stack+
+  '<path d="M98,90 V30" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M40,66 H68" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M80,34 V54" stroke="'+G+'" stroke-width="4"/>'+
+  seatedRight+
+  '<path d="M43,45 H60" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<circle cx="63" cy="45" r="4" stroke="'+D+'" stroke-width="2.5"/>'+
+  '<path d="M67,45 H96" stroke="'+D+'" stroke-width="2"/>'+
+  '<path d="M62,58 H36" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+reversePec: svg( /* 上視圖：胸貼墊，手往後張開 */
+  '<path d="M46,20 H84" stroke="'+G+'" stroke-width="4"/>'+
+  '<circle cx="65" cy="32" r="8" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M65,40 V62 M50,64 H80" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M60,44 L40,54 M70,44 L90,54" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<circle cx="36" cy="56" r="4" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<circle cx="94" cy="56" r="4" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M30,66 L14,78" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'+
+  '<path d="M100,66 L116,78" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+bicepsCurl: svg(base+
+  '<path d="M96,90 V46" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M98,44 h18 v40 h-18 z M98,54 h18 M98,64 h18" stroke="'+G+'" stroke-width="2"/>'+
+  '<path d="M34,68 H60" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M50,60 L84,40" stroke="'+G+'" stroke-width="4"/>'+
+  '<circle cx="36" cy="34" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M38,41 L42,66 M42,66 H66 M66,66 V84" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M40,46 L76,38" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<circle cx="80" cy="37" r="4" stroke="'+D+'" stroke-width="2.5"/>'+
+  '<path d="M90,44 A16,16 0 0 1 78,22" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+legPress: svg(base+
+  '<path d="M24,84 L106,28" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M16,78 L40,62" stroke="'+G+'" stroke-width="4"/>'+
+  '<circle cx="14" cy="66" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M20,68 L44,58 M44,58 L72,44 M72,44 L86,40" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M84,50 L100,22" stroke="'+D+'" stroke-width="4"/>'+
+  '<path d="M62,70 L88,56" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+legCurl: svg(base+stack+
+  '<path d="M38,64 H68 M38,64 L33,40" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M54,52 H76" stroke="'+G+'" stroke-width="4"/>'+
+  '<circle cx="34" cy="32" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M36,39 L40,62 M40,62 H70" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M70,62 L84,78" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<circle cx="87" cy="80" r="5" stroke="'+D+'" stroke-width="2.5"/>'+
+  '<path d="M96,86 Q78,94 62,88" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+hipAbduction: svg( /* 正面：兩腿往外推 */
+  '<circle cx="65" cy="22" r="8" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M65,30 V54 M46,56 H84" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M60,56 L44,84 M70,56 L86,84" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M38,60 V84 M92,60 V84" stroke="'+G+'" stroke-width="4"/>'+
+  '<path d="M32,72 H14" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'+
+  '<path d="M98,72 H116" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+
+abCrunch: svg(base+stack+
+  '<path d="M98,90 V34" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<path d="M42,68 H72" stroke="'+G+'" stroke-width="2.5"/>'+
+  '<circle cx="44" cy="30" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M46,37 Q54,52 50,66 M50,66 H74 M74,66 V84" stroke="'+H+'" stroke-width="2.5"/>'+
+  '<path d="M36,42 H64" stroke="'+D+'" stroke-width="4"/>'+
+  '<path d="M74,32 A20,20 0 0 1 80,58" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>')
+};
+
+const DAYS = {
+A:{name:"推",en:"PUSH",groups:"胸 · 肩 · 三頭",color:"#1E63D8",ex:[
+ {zh:"胸推機",en:"Chest Press",target:"3 × 10–12",icon:"chestPress",
+  id:"<b>背貼椅背</b>坐，握把在<b>胸口兩側</b>，往正前方推出去。",
+  alt:["史密斯機臥推 Smith Machine Bench Press","啞鈴臥推 Dumbbell Bench Press","伏地挺身 Push-up（手撐高降難度）"],
+  why:"都是水平推 Horizontal Press：把重量往身體正前方推。"},
+ {zh:"肩推機",en:"Shoulder Press",target:"3 × 10–12",icon:"shoulderPress",
+  id:"握把在<b>耳朵旁或肩膀上方</b>，往頭頂正上方推。",
+  alt:["啞鈴肩推 Dumbbell Shoulder Press（椅背調到接近垂直）","史密斯機肩推 Smith Machine Shoulder Press","站姿啞鈴推舉 Standing Dumbbell Press"],
+  why:"都是垂直推 Vertical Press：把重量往頭頂上方推。"},
+ {zh:"蝴蝶機夾胸",en:"Pec Deck",target:"3 × 12–15",icon:"pecDeck",
+  id:"<b>背貼椅背</b>坐，手臂張開放兩側墊子上，往<b>身體前方夾</b>。",
+  alt:["滑輪夾胸 Cable Crossover","啞鈴飛鳥 Dumbbell Fly（躺姿，手肘微彎）"],
+  why:"孤立動作 Isolation：只有胸在出力，手肘全程幾乎不彎。"},
+ {zh:"三頭下壓",en:"Triceps Pushdown",target:"3 × 12–15",icon:"pushdown",
+  id:"不是獨立機器 —— 是<b>滑輪機 Cable Machine</b>，滑輪調到<b>最高</b>掛一支短槓。",
+  alt:["三頭伸展機 Triceps Extension Machine","啞鈴頸後臂屈伸 Overhead Triceps Extension","椅上反撐 Bench Dips（免器材）"],
+  why:"手肘固定夾在身側不動，只有前臂在移動。"}]},
+
+B:{name:"拉",en:"PULL",groups:"背 · 二頭 · 後肩",color:"#F0B429",ex:[
+ {zh:"滑輪下拉",en:"Lat Pulldown",target:"3 × 10–12",icon:"latPulldown",
+  id:"<b>頭頂上方有一支長橫槓</b>，大腿上方有固定墊卡住。",
+  alt:["輔助引體向上機 Assisted Pull-up Machine","滑輪機換寬握把做下拉","彈力帶下拉 Band Pulldown"],
+  why:"垂直拉 Vertical Pull：從頭頂上方往下拉，練背闊肌寬度。"},
+ {zh:"坐姿划船",en:"Seated Row",target:"3 × 10–12",icon:"seatedRow",
+  id:"<b>面向機器</b>坐，胸口前有一塊靠墊，握把往肚子方向拉。",
+  alt:["滑輪坐姿划船 Cable Row","啞鈴單手划船 One-arm Dumbbell Row（撐在長椅上）","T槓划船 T-Bar Row"],
+  why:"水平拉 Horizontal Pull：往肚子拉，練背的厚度與姿勢。"},
+ {zh:"反向蝴蝶機",en:"Reverse Pec Deck",target:"3 × 15",icon:"reversePec",
+  id:"<b>常常就是蝴蝶機那一台</b>，差別在你要<b>面向椅背坐、胸口貼墊</b>，手往身體後方張開。",
+  alt:["滑輪面拉 Face Pull（滑輪調高，拉向臉部）","俯身啞鈴飛鳥 Bent-over Rear Delt Fly（輕重量）"],
+  why:"改善圓肩最直接的動作，拍照體態差別最明顯。"},
+ {zh:"二頭彎舉機",en:"Biceps Curl Machine",target:"3 × 12–15",icon:"bicepsCurl",
+  id:"有一塊<b>斜的手臂靠墊</b>，手肘整個擱上去不能離開。",
+  alt:["啞鈴彎舉 Dumbbell Curl","滑輪彎舉 Cable Curl","EZ槓彎舉 EZ-Bar Curl"],
+  why:"時間不夠時這個可以砍，下拉和划船已經練到二頭。"}]},
+
+C:{name:"腿",en:"LEGS",groups:"腿 · 臀 · 核心",color:"#17A05B",ex:[
+ {zh:"腿推機",en:"Leg Press",target:"3 × 10–12",icon:"legPress",
+  id:"<b>45度斜躺</b>，腳踩在一塊<b>大鐵板</b>上往外推。",
+  alt:["哈克深蹲機 Hack Squat","史密斯機深蹲 Smith Machine Squat","高腳杯深蹲 Goblet Squat（抱一顆啞鈴蹲）"],
+  why:"都是膝主導 Knee-dominant：蹲下站起的模式，練大腿前側與臀。"},
+ {zh:"腿後勾",en:"Leg Curl",target:"3 × 12",icon:"legCurl",
+  id:"<b>腳踝後方有滾筒墊</b>，用腳跟往後（或往下）勾。坐姿、趴姿都算。",
+  alt:["啞鈴羅馬尼亞硬舉 Dumbbell RDL（Romanian Deadlift，直腿下放）","臀推機 Hip Thrust Machine","滑輪後踢腿 Cable Kickback"],
+  why:"練大腿後側與臀，久坐族最弱、也最影響臀線的地方。"},
+ {zh:"髖外展機",en:"Hip Abduction",target:"3 × 15–20",icon:"hipAbduction",
+  id:"墊子在<b>大腿外側</b>，往外推開。⚠️ 旁邊常有一台長很像的<b>髖內收 Hip Adduction</b>，墊子在大腿<b>內側</b>、往內夾，別坐錯。",
+  alt:["彈力帶側走 Banded Lateral Walk","側躺抬腿 Side-lying Leg Raise","滑輪髖外展 Cable Abduction"],
+  why:"練臀中肌 Gluteus Medius，臀部側邊撐起來，腰看起來更細。"},
+ {zh:"機械捲腹",en:"Abdominal Crunch",target:"3 × 15",icon:"abCrunch",
+  id:"<b>肩膀上方有壓墊</b>或胸前有握把，身體往前捲下去。",
+  alt:["棒式 Plank（30–45 秒 × 3）","懸吊抬膝 Hanging Knee Raise","墊上捲腹 Crunch"],
+  why:"核心練線條與支撐力，體脂降下來才看得到，不會單獨瘦腰。"}]}
+};
+
+let state = {A:[],B:[],C:[]};
+let day = "A";
+let ready = false;
+let user = null;
+
+const $ = id => document.getElementById(id);
+const todayStr = () => { const d=new Date(), p=n=>String(n).padStart(2,"0");
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); };
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1800); }
+function showBanner(t){ $("banner").hidden=false; $("banner").textContent=t; }
+function setStat(t,c){ const e=$("syncstat"); e.textContent=t; e.className="syncstat "+(c||""); }
+
+/* ---------- 登入 ---------- */
+$("sendlink").onclick = async ()=>{
+  const email = $("email").value.trim();
+  if(!email){ $("gatemsg").textContent = "請先輸入 Email"; $("gatemsg").className="msg bad"; return; }
+  $("sendlink").disabled = true;
+  const { error } = await sb.auth.signInWithOtp({
+    email, options:{ emailRedirectTo: window.location.href }
+  });
+  if(error){ $("gatemsg").textContent = "寄送失敗：" + error.message; $("gatemsg").className="msg bad"; }
+  else { $("gatemsg").textContent = "已寄出，去信箱點連結就登入了。"; $("gatemsg").className="msg ok"; }
+  $("sendlink").disabled = false;
+};
+$("logout").onclick = async ()=>{ await sb.auth.signOut(); location.reload(); };
+
+sb.auth.onAuthStateChange((_e, session)=>{
+  const u = session && session.user;
+  if(u && !user){ user = u; enterApp(); }
+});
+
+(async ()=>{
+  const { data } = await sb.auth.getSession();
+  if(data.session){ user = data.session.user; enterApp(); }
+  else { $("gate").hidden = false; }
+})();
+
+async function enterApp(){
+  $("gate").hidden = true;
+  $("app").hidden = false;
+  $("whoami").textContent = user.email;
+  $("date").value = todayStr();
+  renderTabs();
+  await loadDay(day);
+}
+
+/* ---------- 讀取：只會拿到自己的資料，RLS 在資料庫端擋掉別人的 ---------- */
+async function loadDay(k){
+  setStat("讀取中…","busy");
+  const { data, error } = await sb
+    .from("workout_logs")
+    .select("log_date, exercise, set_no, weight, reps, note")
+    .eq("day_key", k)
+    .order("log_date",{ascending:false})
+    .order("set_no",{ascending:true})
+    .limit(200);
+
+  if(error){ setStat("讀取失敗","bad"); showBanner("讀取失敗："+error.message); ready=true; render(); return; }
+
+  const byDate = {};
+  (data||[]).forEach(r=>{
+    if(!byDate[r.log_date]) byDate[r.log_date] = DAYS[k].ex.map(()=>[null,null,null]);
+    const i = DAYS[k].ex.findIndex(e=>e.zh===r.exercise);
+    if(i<0 || r.set_no>3) return;
+    byDate[r.log_date][i][r.set_no-1] = {w:String(r.weight), r:String(r.reps==null?"":r.reps)};
+  });
+  state[k] = Object.keys(byDate).sort().map(d=>({date:d, data:byDate[d]}));
+  ready = true; render();
+  setStat(state[k].length ? ("已載入 "+state[k].length+" 次紀錄") : "還沒有紀錄", "ok");
+}
+
+/* ---------- 儲存：先刪掉這天這個分項，再寫入現在的內容 ---------- */
+async function saveSession(date){
+  const rows = [];
+  DAYS[day].ex.forEach((e,i)=>{
+    [0,1,2].forEach(n=>{
+      const w = $("list").querySelector('input[data-ex="'+i+'"][data-set="'+n+'"][data-f="w"]').value;
+      const r = $("list").querySelector('input[data-ex="'+i+'"][data-set="'+n+'"][data-f="r"]').value;
+      if(!w) return;
+      rows.push({ user_id:user.id, log_date:date, day_key:day, exercise:e.zh,
+                  set_no:n+1, weight:parseFloat(w), reps: r ? parseInt(r,10) : null });
+    });
+  });
+  if(!rows.length){ toast("還沒填任何重量"); return; }
+
+  setStat("儲存中…","busy");
+  const del = await sb.from("workout_logs").delete()
+    .eq("log_date",date).eq("day_key",day);
+  if(del.error){ setStat("儲存失敗","bad"); showBanner("儲存失敗："+del.error.message); return; }
+
+  const ins = await sb.from("workout_logs").insert(rows);
+  if(ins.error){ setStat("儲存失敗","bad"); showBanner("儲存失敗："+ins.error.message); return; }
+
+  $("banner").hidden = true;
+  toast("已儲存 "+date);
+  await loadDay(day);
+}
+
+$("save").onclick = ()=> saveSession($("date").value || todayStr());
+$("clear").onclick = ()=>{
+  $("list").querySelectorAll("input").forEach(i=>{ if(i.dataset.f==="w") i.value=""; });
+  DAYS[day].ex.forEach((_,i)=>updateDelta(i));
+  toast("已清空輸入欄");
+};
+
+/* ---------- 畫面 ---------- */
+function renderTabs(){
+  $("tabs").innerHTML = Object.entries(DAYS).map(([k,d])=>
+    '<button class="tab" role="tab" data-day="'+k+'" style="--c:'+d.color+'" aria-selected="'+(k===day)+'">'+
+    '<span class="l">DAY '+k+' · '+d.en+'</span><span class="n">'+d.name+'</span>'+
+    '<span class="g">'+d.groups+'</span></button>').join("");
+  $("tabs").querySelectorAll(".tab").forEach(b=>{
+    b.onclick = async ()=>{ day=b.dataset.day; ready=false; render();
+      window.scrollTo({top:0,behavior:"smooth"}); await loadDay(day); };
+  });
+}
+const lastSession = () => state[day].length ? state[day][state[day].length-1] : null;
+function bestOf(sets){
+  const v=(sets||[]).filter(s=>s&&s.w); if(!v.length) return null;
+  return v.reduce((a,b)=> parseFloat(b.w)>parseFloat(a.w)?b:a);
+}
+
+function render(){
+  const d = DAYS[day];
+  document.documentElement.style.setProperty("--day", d.color);
+  renderTabs();
+  if(!ready){ $("list").innerHTML = '<div class="loading">載入中…</div>'; return; }
+  const prev = lastSession();
+
+  $("list").innerHTML = d.ex.map((e,i)=>{
+    const p = prev ? bestOf(prev.data[i]) : null;
+    const prevTxt = p
+      ? '<b>上次</b> '+p.w+' kg × '+(p.r||"–")+' 下 <span class="delta" data-i="'+i+'">今天？</span>'
+      : '<b>上次</b> 尚無紀錄 — 今天先試出一個 RIR 2 的重量';
+    return '<div class="ex"><div class="ex-h">'+ICONS[e.icon]+
+      '<div class="ex-t"><div class="ex-top"><div><div class="ex-zh">'+e.zh+'</div>'+
+      '<div class="ex-en">'+e.en+'</div></div><div class="ex-target">'+e.target+'</div></div>'+
+      '<div class="ex-id">'+e.id+'</div></div></div>'+
+      '<div class="prev">'+prevTxt+'</div>'+
+      '<div class="col-h"><span></span><span>重量</span><span>次數</span></div><div class="sets">'+
+      [1,2,3].map(n=>'<div class="set"><div class="set-n">'+n+'</div>'+
+        '<div class="field"><input type="number" inputmode="decimal" step="0.5" min="0" placeholder="'+
+          (p?p.w:"–")+'" data-ex="'+i+'" data-set="'+(n-1)+'" data-f="w"><span class="u">kg</span></div>'+
+        '<div class="field"><input type="number" inputmode="numeric" step="1" min="0" value="10"'+
+          ' data-ex="'+i+'" data-set="'+(n-1)+'" data-f="r"><span class="u">下</span></div>'+
+        '</div>').join("")+'</div>'+
+      '<details class="alt"><summary>找不到這台？替代動作</summary><div class="alt-body"><ul>'+
+      e.alt.map(a=>'<li>'+a+'</li>').join("")+'</ul><div class="why">'+e.why+'</div></div></details></div>';
+  }).join("");
+
+  $("list").querySelectorAll("input[data-f='w']").forEach(inp=>{
+    inp.addEventListener("input", ()=>updateDelta(inp.dataset.ex));
+  });
+  renderHist();
+}
+
+function updateDelta(i){
+  const chip = $("list").querySelector('.delta[data-i="'+i+'"]'); if(!chip) return;
+  const prev = lastSession(); const p = prev ? bestOf(prev.data[i]) : null; if(!p) return;
+  const vals=[...$("list").querySelectorAll('input[data-ex="'+i+'"][data-f="w"]')]
+    .map(x=>parseFloat(x.value)).filter(v=>!isNaN(v));
+  if(!vals.length){ chip.className="delta"; chip.textContent="今天？"; return; }
+  const diff = Math.max(...vals) - parseFloat(p.w);
+  if(diff>0){ chip.className="delta up"; chip.textContent="+"+(+diff.toFixed(1))+" kg"; }
+  else if(diff===0){ chip.className="delta same"; chip.textContent="持平"; }
+  else { chip.className="delta down"; chip.textContent=(+diff.toFixed(1))+" kg"; }
+}
+
+function renderHist(){
+  const arr=[...state[day]].reverse().slice(0,6);
+  if(!arr.length){ $("hist").innerHTML='<div class="empty">還沒有 Day '+day+' 的紀錄。</div>'; return; }
+  $("hist").innerHTML = arr.map(s=>{
+    const lines = DAYS[day].ex.map((e,i)=>{
+      const sets=(s.data[i]||[]).filter(x=>x&&x.w).map(x=>x.w+"×"+(x.r||"?")).join("  ");
+      return sets ? e.zh+" &nbsp;"+sets : null;
+    }).filter(Boolean);
+    return '<div class="hist-item"><div class="d">'+s.date+'</div>'+lines.join("<br>")+'</div>';
+  }).join("");
+}
+</script>
+</body>
+</html>
