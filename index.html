@@ -124,6 +124,10 @@
   .foot ul{margin:0;padding-left:18px}
   .foot li{margin-bottom:5px}
   .loading{color:var(--dimmer);font-family:var(--mono);font-size:12px;padding:20px 0}
+  .timer{position:fixed;right:14px;bottom:112px;z-index:50;border:1px solid var(--line);
+       background:var(--panel);color:var(--text);border-radius:999px;padding:11px 16px;
+       font-family:var(--mono);font-size:14px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+  .timer.run{background:var(--day);border-color:var(--day);color:#fff}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
   @media (max-width:360px){.mach{width:76px;flex:0 0 76px;height:62px}}
   /* ---- 登入畫面 ---- */
@@ -205,6 +209,7 @@
     <button class="save" id="save">儲存這次訓練</button>
     <button class="ghost" id="clear">清空</button>
   </div></div>
+  <button class="timer" id="timer" hidden></button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -449,7 +454,29 @@ async function enterApp(){
   $("date").value = todayStr();
   renderTabs();
   await loadDay(day);
+  await flushPending();  // resend anything saved while offline last time
 }
+
+/* ---------- Rest timer: filling in a weight = set done, start the clock ---------- */
+const REST_SECONDS = 70;  // ponytail: fixed midpoint of the 60-75s target; make it a setting if it ever matters
+let restTick = null;
+function startRest(){
+  clearInterval(restTick);
+  let left = REST_SECONDS;
+  const el = $("timer");
+  el.hidden = false; el.classList.add("run");
+  el.textContent = "休息 " + left + "s";
+  restTick = setInterval(()=>{
+    left--;
+    if(left > 0){ el.textContent = "休息 " + left + "s"; return; }
+    clearInterval(restTick);
+    el.classList.remove("run");
+    el.textContent = "開始下一組";
+    if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    setTimeout(()=>{ if(!el.classList.contains("run")) el.hidden = true; }, 5000);
+  }, 1000);
+}
+$("timer").onclick = ()=>{ clearInterval(restTick); $("timer").hidden = true; $("timer").classList.remove("run"); };
 
 /* ---------- 讀取：只會拿到自己的資料，RLS 在資料庫端擋掉別人的 ---------- */
 async function loadDay(k){
@@ -476,6 +503,47 @@ async function loadDay(k){
   setStat(state[k].length ? ("已載入 "+state[k].length+" 次紀錄") : "還沒有紀錄", "ok");
 }
 
+/* ---------- Offline queue: failed saves wait in localStorage until we're back online ---------- */
+const PENDING_KEY = "ppl_pending";
+const getPending = () => JSON.parse(localStorage.getItem(PENDING_KEY) || "[]");
+const setPending = a => a.length
+  ? localStorage.setItem(PENDING_KEY, JSON.stringify(a))
+  : localStorage.removeItem(PENDING_KEY);
+const isNetErr = e => !navigator.onLine || /fetch|network/i.test(e.message || "");
+
+function queuePending(date, dayKey, rows){
+  const rest = getPending().filter(p => !(p.date === date && p.day === dayKey));
+  setPending([...rest, {date, day: dayKey, rows}]);
+  setStat("已暫存，恢復連線自動補送", "busy");
+  toast("沒有網路 — 已暫存 " + date + "，恢復連線會自動補送");
+}
+
+/* delete-then-insert, same strategy as a normal save; returns error or null */
+async function writeSession(date, dayKey, rows){
+  const del = await sb.from("workout_logs").delete()
+    .eq("log_date", date).eq("day_key", dayKey);
+  if(del.error) return del.error;
+  const ins = await sb.from("workout_logs").insert(rows);
+  return ins.error;
+}
+
+let flushing = false;
+async function flushPending(){
+  if(flushing || !user) return;
+  let q = getPending();
+  if(!q.length) return;
+  flushing = true;
+  let sent = 0;
+  while(q.length){
+    const err = await writeSession(q[0].date, q[0].day, q[0].rows);
+    if(err) break;           // still offline (or worse) — retry on next 'online'
+    q = q.slice(1); setPending(q); sent++;
+  }
+  flushing = false;
+  if(sent){ toast("已補送 " + sent + " 筆離線紀錄"); await loadDay(day); }
+}
+window.addEventListener("online", flushPending);
+
 /* ---------- 儲存：先刪掉這天這個分項，再寫入現在的內容 ---------- */
 async function saveSession(date){
   const rows = [];
@@ -491,12 +559,11 @@ async function saveSession(date){
   if(!rows.length){ toast("還沒填任何重量"); return; }
 
   setStat("儲存中…","busy");
-  const del = await sb.from("workout_logs").delete()
-    .eq("log_date",date).eq("day_key",day);
-  if(del.error){ setStat("儲存失敗","bad"); showBanner("儲存失敗："+del.error.message); return; }
-
-  const ins = await sb.from("workout_logs").insert(rows);
-  if(ins.error){ setStat("儲存失敗","bad"); showBanner("儲存失敗："+ins.error.message); return; }
+  const err = await writeSession(date, day, rows);
+  if(err){
+    if(isNetErr(err)){ queuePending(date, day, rows); return; }
+    setStat("儲存失敗","bad"); showBanner("儲存失敗："+err.message); return;
+  }
 
   $("banner").hidden = true;
   toast("已儲存 "+date);
@@ -557,6 +624,7 @@ function render(){
 
   $("list").querySelectorAll("input[data-f='w']").forEach(inp=>{
     inp.addEventListener("input", ()=>updateDelta(inp.dataset.ex));
+    inp.addEventListener("change", ()=>{ if(inp.value) startRest(); });
   });
   renderHist();
 }
