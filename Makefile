@@ -5,7 +5,7 @@
 help:
 	@echo "PPL 訓練記錄 — 指令說明"
 	@echo ""
-	@echo "  make link EMAIL=you@example.com [REDIRECT=https://...]"
+	@echo "  make link you@example.com [https://redirect...]"
 	@echo "      產生一次性 magic link（不寄信），貼到裝置瀏覽器即登入。"
 	@echo "      需先 export SUPABASE_SERVICE_KEY=...（Dashboard → Project Settings → API Keys → service_role）"
 	@echo ""
@@ -13,7 +13,11 @@ help:
 	@echo "      本機預覽 http://localhost:8642"
 
 link:
-	@./magic-link.sh "$(EMAIL)" $(REDIRECT)
+	@./magic-link.sh $(filter-out link,$(MAKECMDGOALS))
+
+# swallow the email/redirect words so make doesn't treat them as targets
+%:
+	@:
 
 serve:
 	python3 -m http.server 8642
