@@ -124,6 +124,7 @@
   .foot ul{margin:0;padding-left:18px}
   .foot li{margin-bottom:5px}
   .loading{color:var(--dimmer);font-family:var(--mono);font-size:12px;padding:20px 0}
+  .spark{display:block;width:100%;height:56px;margin:8px 0 0}
   .timer{position:fixed;right:14px;bottom:112px;z-index:50;border:1px solid var(--line);
        background:var(--panel);color:var(--text);border-radius:999px;padding:11px 16px;
        font-family:var(--mono);font-size:14px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4)}
@@ -599,6 +600,31 @@ function bestOf(sets){
   return v.reduce((a,b)=> parseFloat(b.w)>parseFloat(a.w)?b:a);
 }
 
+/* Progress sparkline: best-set weight per session, last 10 sessions.
+   Single series in the day color; last point direct-labeled; dots carry
+   native <title> tooltips. Needs >=2 sessions to be a trend. */
+function sparkline(i){
+  const pts = state[day]
+    .map(s => ({d: s.date, b: bestOf(s.data[i])}))
+    .filter(p => p.b)
+    .map(p => ({d: p.d, w: parseFloat(p.b.w)}))
+    .slice(-10);
+  if(pts.length < 2) return "";
+  const W=280, H=56, PX=8, PY=12, LABEL=38;
+  const min = Math.min(...pts.map(p=>p.w)), max = Math.max(...pts.map(p=>p.w));
+  const x = k => PX + k*(W-2*PX-LABEL)/(pts.length-1);
+  const y = w => max===min ? H/2 : PY + (H-2*PY)*(1-(w-min)/(max-min));
+  const last = pts[pts.length-1];
+  return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMinYMid meet" '+
+    'role="img" aria-label="'+DAYS[day].ex[i].zh+' 重量趨勢，最近 '+pts.length+' 次">'+
+    '<path d="'+pts.map((p,k)=>(k?"L":"M")+x(k).toFixed(1)+","+y(p.w).toFixed(1)).join(" ")+'"'+
+    ' stroke="var(--day)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'+
+    pts.map((p,k)=>'<circle cx="'+x(k).toFixed(1)+'" cy="'+y(p.w).toFixed(1)+'" r="4" fill="var(--day)">'+
+      '<title>'+p.d+'　'+p.w+' kg</title></circle>').join("")+
+    '<text x="'+(x(pts.length-1)+9).toFixed(1)+'" y="'+(y(last.w)+4).toFixed(1)+'"'+
+    ' fill="var(--dim)" font-size="12" font-family="var(--mono)">'+last.w+'kg</text></svg>';
+}
+
 function render(){
   const d = DAYS[day];
   document.documentElement.style.setProperty("--day", d.color);
@@ -615,7 +641,7 @@ function render(){
       '<div class="ex-t"><div class="ex-top"><div><div class="ex-zh">'+e.zh+'</div>'+
       '<div class="ex-en">'+e.en+'</div></div><div class="ex-target">'+e.target+'</div></div>'+
       '<div class="ex-id">'+e.id+'</div></div></div>'+
-      '<div class="prev">'+prevTxt+'</div>'+
+      '<div class="prev">'+prevTxt+'</div>'+sparkline(i)+
       '<div class="col-h"><span></span><span>重量</span><span>次數</span></div><div class="sets">'+
       [1,2,3].map(n=>'<div class="set"><div class="set-n">'+n+'</div>'+
         '<div class="field"><input type="number" inputmode="decimal" step="0.5" min="0" placeholder="'+
