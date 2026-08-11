@@ -536,8 +536,11 @@ async function flushPending(){
   let sent = 0;
   while(q.length){
     const err = await writeSession(q[0].date, q[0].day, q[0].rows);
-    if(err) break;           // still offline (or worse) — retry on next 'online'
-    q = q.slice(1); setPending(q); sent++;
+    if(err && isNetErr(err)) break;   // still offline — retry on next 'online'
+    if(err){                          // permanent error: drop it, tell the user, keep flushing the rest
+      showBanner("離線紀錄補送失敗（" + q[0].date + " Day " + q[0].day + "）：" + err.message + "\n請重新填寫這天的紀錄。");
+    } else sent++;
+    q = q.slice(1); setPending(q);
   }
   flushing = false;
   if(sent){ toast("已補送 " + sent + " 筆離線紀錄"); await loadDay(day); }
@@ -565,6 +568,8 @@ async function saveSession(date){
     setStat("儲存失敗","bad"); showBanner("儲存失敗："+err.message); return;
   }
 
+  // this save supersedes any queued offline copy of the same date/day
+  setPending(getPending().filter(p => !(p.date === date && p.day === day)));
   $("banner").hidden = true;
   toast("已儲存 "+date);
   await loadDay(day);
