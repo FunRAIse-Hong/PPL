@@ -1,6 +1,7 @@
 # PPL 訓練記錄 App
 
-先讀 `HANDOFF.md` — 專案背景、架構決策、踩過的坑都在裡面。
+先讀 `CONTEXT.md` — 專案目標、領域詞彙、UI 慣例、運維注意、請不要做的事。
+架構決策在 `docs/adr/`。線上版：https://funraise-hong.github.io/PPL/
 
 ## Agent skills
 
