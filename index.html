@@ -4,217 +4,178 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PPL 訓練記錄</title>
-<script>
-/* apply saved theme before first paint to avoid a flash */
-document.documentElement.dataset.theme = localStorage.getItem("ppl_theme") || "";
-</script>
 <style>
   :root{
-    --ink:#0F1216; --panel:#171B21; --panel-2:#1D222A; --line:#2A313B;
-    --text:#E9ECF1; --dim:#8A94A2; --dimmer:#5C6675; --day:#1E63D8;
-    --dayA:#1E63D8; --dayB:#F0B429; --dayC:#17A05B;
-    --mach-bg:#12161C; --alt-bg:#14181E; --focus-bg:#20262F; --ph:#3F4855;
-    --good:#5BE59A; --good-line:#2C6B47; --good-bg:#12281C;
-    --bad:#FF9B87; --bad-line:#6B3A2C;
-    --warn:#E5C97A; --warn-line:#6B5A2C; --warn-bg:#241E12;
-    --mono: ui-monospace,"SF Mono","JetBrains Mono","Roboto Mono",Menlo,monospace;
-    --sans: -apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
-  }
-
-  /* ---- 主題：文青（紙感淺色、明體、墨色調） ---- */
-  [data-theme="wenqing"]{
-    --ink:#F5F2EB; --panel:#FDFCF8; --panel-2:#F1EDE3; --line:#DDD6C6;
-    --text:#2B2823; --dim:#6E6759; --dimmer:#9B9384; --day:#46608C;
-    --dayA:#46608C; --dayB:#8F6825; --dayC:#4F7A5D;
-    --mach-bg:#F1EDE3; --alt-bg:#F5F2EB; --focus-bg:#FFFFFF; --ph:#C4BCAB;
-    --good:#3E7A52; --good-line:#9DBFA8; --good-bg:#E8F0E9;
-    --bad:#A8503A; --bad-line:#D8B0A4;
-    --warn:#7A5E1E; --warn-line:#D8C79A; --warn-bg:#F5EEDA;
-    --sans:"Noto Serif TC","Songti TC","PMingLiU",Georgia,serif;
-  }
-  [data-theme="wenqing"] h1{font-weight:600;letter-spacing:.04em}
-  [data-theme="wenqing"] .tab .n{font-weight:600}
-
-  /* ---- 主題：樸素（灰白極簡、低彩度） ---- */
-  [data-theme="plain"]{
-    --ink:#FAFAFA; --panel:#FFFFFF; --panel-2:#F4F4F4; --line:#E4E4E4;
-    --text:#1C1C1C; --dim:#666666; --dimmer:#9A9A9A; --day:#2757A8;
-    --dayA:#2757A8; --dayB:#846312; --dayC:#1F7A48;
-    --mach-bg:#F4F4F4; --alt-bg:#FAFAFA; --focus-bg:#FFFFFF; --ph:#C8C8C8;
-    --good:#1F7A48; --good-line:#B5D4C1; --good-bg:#EDF5F0;
-    --bad:#B0472F; --bad-line:#DDB4A8;
-    --warn:#7A5E1E; --warn-line:#DDD0A8; --warn-bg:#F7F2E2;
-  }
-
-  /* ---- 主題：熱血（高對比、高能量） ---- */
-  [data-theme="hype"]{
-    --ink:#0B0B14; --panel:#151522; --panel-2:#1C1C2E; --line:#33334D;
-    --text:#F4F4FF; --dim:#9C9CBE; --dimmer:#6A6A8C; --day:#3B82F6;
-    --dayA:#3B82F6; --dayB:#FACC15; --dayC:#22C55E;
-    --mach-bg:#101020; --alt-bg:#12121F; --focus-bg:#24243A; --ph:#4A4A6A;
-    --good:#4ADE80; --good-line:#2C6B47; --good-bg:#0E2B1A;
-    --bad:#FB923C; --bad-line:#7A4222;
+    --bg:#0C0C11; --panel:#16161F; --panel-2:#0F0F16; --line:#2A2A3A;
+    --text:#F5F5FF; --dim:#9C9CB8; --dimmer:#63637E;
+    --dayA:#FF5A3C; --dayB:#38BDF8; --dayC:#A3E635; --day:#FF5A3C;
+    --up:#3DDC84; --down:#FB7185;
     --warn:#FACC15; --warn-line:#6B5A1C; --warn-bg:#241F0E;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Roboto Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
   }
-  [data-theme="hype"] h1{font-weight:900;font-size:30px;letter-spacing:-.03em}
-  [data-theme="hype"] .tab .n{font-weight:900}
-  [data-theme="hype"] button.save{font-weight:900;letter-spacing:.06em;
-    background:linear-gradient(120deg,var(--day),color-mix(in oklab,var(--day) 60%,#fff 12%))}
-  [data-theme="hype"] .delta.up{font-weight:800}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
-  body{background:var(--ink);color:var(--text);font-family:var(--sans);font-size:16px;
-       line-height:1.5;padding:0 0 100px;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:640px;margin:0 auto;padding:0 16px}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;
+       line-height:1.5;padding:0 0 110px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px}
 
-  header{padding:24px 0 12px}
-  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--dimmer);text-transform:uppercase}
-  h1{font-size:26px;line-height:1.15;margin:6px 0 0;letter-spacing:-.02em;font-weight:800}
-  .sub{color:var(--dim);font-size:13px;margin-top:6px}
+  .hero{background:linear-gradient(150deg,color-mix(in oklab,var(--day) 78%,#000),color-mix(in oklab,var(--day) 40%,#000));
+       margin:0 -16px;padding:26px 20px 18px;border-radius:0 0 24px 24px}
+  .hero .k{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:rgba(255,255,255,.75);text-transform:uppercase}
+  .hero h1{font-size:44px;font-weight:900;margin:2px 0 0;letter-spacing:-.02em;color:#fff;line-height:1.05}
+  .hero h1 small{font-size:16px;font-weight:800;letter-spacing:.12em;margin-left:10px;color:rgba(255,255,255,.85)}
+  .streak{margin-top:12px;display:flex;align-items:center;gap:10px;color:#fff;font-size:13px;font-weight:700}
+  .dots{display:flex;gap:5px}
+  .dots i{width:22px;height:6px;border-radius:3px;background:rgba(255,255,255,.28)}
+  .dots i.f{background:#fff}
+  .who{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;
+       color:rgba(255,255,255,.55);margin-top:12px}
+  .who button{background:none;border:none;color:rgba(255,255,255,.75);font-family:var(--mono);
+       font-size:11px;text-decoration:underline;cursor:pointer;padding:0}
 
-  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 4px}
-  .tab{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 8px 11px;
-       text-align:center;cursor:pointer;position:relative;overflow:hidden;font-family:inherit;color:var(--dim);
-       transition:border-color .15s,background .15s}
-  .tab::before{content:"";position:absolute;inset:auto 0 0 0;height:3px;background:var(--c);opacity:.35;transition:opacity .15s,height .15s}
-  .tab[aria-selected="true"]{background:var(--panel-2);border-color:var(--c);color:var(--text)}
-  .tab[aria-selected="true"]::before{opacity:1;height:4px}
-  .tab .l{font-family:var(--mono);font-size:11px;letter-spacing:.14em;display:block;color:var(--dimmer)}
-  .tab[aria-selected="true"] .l{color:var(--c)}
-  .tab .n{font-size:19px;font-weight:800;letter-spacing:.06em}
-  .tab .g{font-size:11px;color:var(--dimmer);display:block;margin-top:1px}
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 4px}
+  .tab{border:2px solid var(--line);background:var(--panel);border-radius:14px;padding:12px 0;
+       font-size:16px;font-weight:900;color:var(--dim);font-family:inherit;letter-spacing:.1em;
+       cursor:pointer;transition:border-color .15s,color .15s}
+  .tab[aria-selected="true"]{border-color:var(--c);color:#fff;
+       background:linear-gradient(160deg,color-mix(in oklab,var(--c) 22%,var(--panel)),var(--panel))}
 
-  .daterow{display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px;gap:12px}
+  .daterow{display:flex;align-items:center;justify-content:space-between;margin:14px 0 6px;gap:12px}
   .daterow label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--dimmer)}
-  input[type=date]{background:var(--panel);border:1px solid var(--line);color:var(--text);
-       border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:14px}
+  input[type=date]{background:var(--panel);border:2px solid var(--line);color:var(--text);
+       border-radius:12px;padding:9px 12px;font-family:var(--mono);font-size:14px;font-weight:700}
 
-  .ex{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:10px 0;
-      overflow:hidden;border-left:3px solid var(--day)}
-  .ex-h{display:flex;gap:12px;padding:14px 14px 8px;align-items:flex-start}
-  .mach{width:92px;height:72px;flex:0 0 92px;background:var(--mach-bg);border:1px solid var(--line);border-radius:8px}
+  .ex{background:var(--panel);border:1px solid var(--line);border-radius:18px;margin:12px 0;overflow:hidden}
+  .ex-h{display:flex;gap:12px;padding:16px 16px 0;align-items:flex-start}
+  .mach{width:88px;height:68px;flex:0 0 88px;background:var(--panel-2);border:1px solid var(--line);border-radius:12px}
   .ex-t{flex:1;min-width:0}
   .ex-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-  .ex-zh{font-weight:700;font-size:16px;letter-spacing:-.01em}
-  .ex-en{font-family:var(--mono);font-size:11px;color:var(--dimmer);letter-spacing:.04em;margin-top:2px}
-  .ex-target{font-family:var(--mono);font-size:12px;color:var(--dim);white-space:nowrap}
-  .ex-id{font-size:12.5px;color:var(--dim);margin-top:7px;line-height:1.45}
-  .ex-id b{color:var(--day);font-weight:600}
+  .ex-zh{font-weight:900;font-size:18px}
+  .ex-en{font-family:var(--mono);font-size:10.5px;color:var(--dimmer);letter-spacing:.04em;margin-top:2px}
+  .ex-target{font-family:var(--mono);font-size:11px;color:var(--dim);white-space:nowrap}
+  .ex-id{font-size:12.5px;color:var(--dim);margin-top:6px;line-height:1.45}
+  .ex-id b{color:var(--day);font-weight:700}
 
-  .prev{padding:2px 14px 10px;font-family:var(--mono);font-size:12px;color:var(--dimmer);
-        display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .prev b{color:var(--dim);font-weight:400}
-  .delta{display:inline-block;padding:1px 7px;border-radius:20px;font-size:11px;border:1px solid var(--line);color:var(--dimmer)}
-  .delta.up{color:var(--good);border-color:var(--good-line);background:var(--good-bg)}
+  .big{display:flex;align-items:baseline;gap:12px;padding:12px 16px 0}
+  .big .w{font-family:var(--mono);font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1}
+  .big .w small{font-size:14px;color:var(--dim);font-weight:600;margin-left:2px}
+  .delta{font-weight:900;font-size:15px;border-radius:999px;padding:4px 12px;border:1px solid var(--line);color:var(--dimmer)}
+  .delta.up{background:rgba(61,220,132,.14);border-color:rgba(61,220,132,.4);color:var(--up)}
+  .delta.down{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.35);color:var(--down)}
   .delta.same{color:var(--dim)}
-  .delta.down{color:var(--bad);border-color:var(--bad-line)}
+  .sub{font-size:12px;color:var(--dim);padding:4px 16px 0}
+  .spark{display:block;width:calc(100% - 32px);height:52px;margin:4px 16px 0}
 
-  .col-h{display:grid;grid-template-columns:26px 1fr 1fr;gap:8px;padding:0 14px 6px}
+  .col-h{display:grid;grid-template-columns:26px 1fr 1fr;gap:9px;padding:12px 16px 6px}
   .col-h span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--dimmer)}
-  .sets{padding:0 14px 12px;display:grid;gap:7px}
-  .set{display:grid;grid-template-columns:26px 1fr 1fr;gap:8px;align-items:center}
-  .set-n{font-family:var(--mono);font-size:11px;color:var(--dimmer)}
+  .sets{padding:0 16px 6px;display:grid;gap:9px}
+  .set{display:grid;grid-template-columns:26px 1fr 1fr;gap:9px;align-items:center}
+  .set-n{font-family:var(--mono);font-size:12px;color:var(--dim);text-align:center;font-weight:700}
   .field{position:relative}
-  .field input{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
-       padding:11px 34px 11px 11px;color:var(--text);font-family:var(--mono);font-size:16px}
-  .field input:focus{outline:none;border-color:var(--day);background:var(--focus-bg)}
-  .field input::placeholder{color:var(--ph)}
-  .field .u{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:var(--mono);
+  .field input{width:100%;background:var(--panel-2);border:2px solid var(--line);border-radius:12px;height:54px;
+       padding:0 40px 0 14px;color:var(--text);font-family:var(--mono);font-size:20px;font-weight:700}
+  .field input:focus{outline:none;border-color:var(--day)}
+  .field input::placeholder{color:#3A3A50}
+  .field .u{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:var(--mono);
        font-size:11px;color:var(--dimmer);pointer-events:none}
+  .done{margin:2px 16px 0;font-size:13px;font-weight:800;color:var(--up);display:none}
+  .done.show{display:block}
+  .padend{height:14px}
 
-  details.alt{border-top:1px solid var(--line);background:var(--alt-bg)}
-  details.alt summary{list-style:none;cursor:pointer;padding:10px 14px;font-family:var(--mono);
+  details.alt{border-top:1px solid var(--line);background:var(--panel-2);margin-top:10px}
+  details.alt summary{list-style:none;cursor:pointer;padding:11px 16px;font-family:var(--mono);
        font-size:11px;letter-spacing:.12em;color:var(--dim);display:flex;justify-content:space-between;align-items:center}
   details.alt summary::-webkit-details-marker{display:none}
   details.alt summary::after{content:"＋";color:var(--dimmer)}
   details.alt[open] summary::after{content:"−"}
-  .alt-body{padding:0 14px 14px;font-size:13.5px;color:var(--dim)}
+  .alt-body{padding:0 16px 14px;font-size:13.5px;color:var(--dim)}
   .alt-body ul{margin:0;padding-left:18px}
   .alt-body li{margin:0 0 5px}
   .alt-body .why{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--dimmer)}
 
-  .savebar{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,var(--ink) 70%,transparent);
+  .savebar{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,var(--bg) 70%,transparent);
        padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
-  .savebar .inner{max-width:640px;margin:0 auto;display:flex;gap:10px}
-  button.save{flex:1;background:var(--day);color:#fff;border:none;border-radius:10px;padding:15px;
-       font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.02em}
-  button.ghost{background:var(--panel);color:var(--dim);border:1px solid var(--line);border-radius:10px;
-       padding:15px 16px;font-family:var(--mono);font-size:12px;cursor:pointer}
-  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:var(--panel-2);
-       border:1px solid var(--day);color:var(--text);padding:10px 18px;border-radius:999px;font-size:13px;
-       opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s}
+  .savebar .inner{max-width:448px;margin:0 auto;display:flex;gap:10px}
+  button.save{flex:1;color:#fff;border:none;border-radius:16px;padding:18px;font-size:18px;font-weight:900;
+       font-family:inherit;letter-spacing:.05em;cursor:pointer;
+       background:linear-gradient(120deg,color-mix(in oklab,var(--day) 80%,#000),color-mix(in oklab,var(--day) 55%,#000));
+       box-shadow:0 6px 24px color-mix(in oklab,var(--day) 35%,transparent)}
+  button.ghost{background:var(--panel);color:var(--dim);border:2px solid var(--line);border-radius:16px;
+       padding:18px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:var(--panel);
+       border:2px solid var(--day);color:var(--text);padding:10px 18px;border-radius:999px;font-size:13px;
+       font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s}
   .toast.show{opacity:1;bottom:104px}
 
-  .banner{margin:14px 0 0;padding:11px 13px;border:1px solid var(--warn-line);background:var(--warn-bg);
-       border-radius:10px;font-size:13px;color:var(--warn);line-height:1.5;white-space:pre-wrap}
+  .banner{margin:14px 0 0;padding:12px 14px;border:1px solid var(--warn-line);background:var(--warn-bg);
+       border-radius:14px;font-size:13px;color:var(--warn);line-height:1.5;white-space:pre-wrap;font-weight:600}
   .hist-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
   .hist-head h2{margin:0}
-  .mini{background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:8px;
-       padding:7px 12px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;cursor:pointer}
-  .dump{width:100%;margin-top:8px;background:var(--panel-2);border:1px solid var(--line);
-       border-radius:8px;color:var(--dim);font-family:var(--mono);font-size:12px;padding:10px;resize:vertical}
-  .autorow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 10px;
-       font-size:12.5px;color:var(--dim);cursor:pointer}
-  .autorow input{accent-color:var(--day);width:16px;height:16px}
   .syncstat{font-family:var(--mono);font-size:11px;color:var(--dimmer);margin-left:auto;text-align:right}
   .syncstat.busy{color:var(--day)}
-  .syncstat.ok{color:var(--good)}
-  .syncstat.bad{color:var(--bad)}
+  .syncstat.ok{color:var(--up)}
+  .syncstat.bad{color:var(--down)}
   .hist{margin:22px 0 0}
-  .hist h2{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dimmer);font-weight:400;
-       text-transform:uppercase;margin:0 0 8px}
-  .hist-item{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:11px 13px;
-       margin-bottom:7px;font-family:var(--mono);font-size:12px;color:var(--dim)}
-  .hist-item .d{color:var(--text);font-size:13px;margin-bottom:4px}
+  .hist h2{font-size:13px;font-weight:900;letter-spacing:.15em;color:var(--dim);margin:0}
+  .hist-item{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;
+       margin-bottom:8px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .hist-item .d{color:var(--text);font-weight:700;font-size:13px;margin-bottom:3px}
   .empty{color:var(--dimmer);font-size:13px;padding:14px 0}
 
-  .foot{margin:26px 0 0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);
+  .foot{margin:26px 0 0;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--panel);
        font-size:13px;color:var(--dim)}
-  .foot h3{font-size:13px;margin:0 0 8px;color:var(--text)}
+  .foot h3{font-size:14px;font-weight:900;margin:0 0 8px;color:var(--text)}
   .foot ul{margin:0;padding-left:18px}
   .foot li{margin-bottom:5px}
   .loading{color:var(--dimmer);font-family:var(--mono);font-size:12px;padding:20px 0}
-  .spark{display:block;width:100%;height:56px;margin:8px 0 0}
-  .editex{margin:14px 0 0;border:1px dashed var(--line);border-radius:10px;padding:10px 13px;
+  .editex{margin:14px 0 0;border:2px dashed var(--line);border-radius:14px;padding:10px 14px;
        font-size:13.5px;color:var(--dim)}
   .editex summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.15em;
        color:var(--dimmer);text-transform:uppercase}
   .editrow{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line)}
   .editrow input[type=checkbox]{accent-color:var(--day);width:17px;height:17px}
   .editrow .rm{margin-left:auto;background:none;border:1px solid var(--line);color:var(--dim);
-       border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer}
+       border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer}
   .addrow{display:flex;gap:8px;margin-top:10px}
-  .addrow input{flex:1;min-width:0;background:var(--panel-2);border:1px solid var(--line);
-       border-radius:8px;padding:9px;color:var(--text);font-size:14px;font-family:inherit}
-  .addrow button{background:var(--day);border:none;color:#fff;border-radius:8px;
-       padding:9px 14px;font-size:14px;cursor:pointer}
-  .timer{position:fixed;right:14px;bottom:112px;z-index:50;border:1px solid var(--line);
-       background:var(--panel);color:var(--text);border-radius:999px;padding:11px 16px;
-       font-family:var(--mono);font-size:14px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4)}
-  .timer.run{background:var(--day);border-color:var(--day);color:#fff}
+  .addrow input{flex:1;min-width:0;background:var(--panel-2);border:2px solid var(--line);
+       border-radius:10px;padding:10px;color:var(--text);font-size:14px;font-family:inherit}
+  .addrow button{background:color-mix(in oklab,var(--day) 75%,#000);border:none;color:#fff;border-radius:10px;
+       padding:10px 14px;font-size:14px;font-weight:800;cursor:pointer}
+  .timer{position:fixed;right:16px;bottom:112px;z-index:50;border:none;color:#fff;border-radius:999px;
+       padding:13px 20px;font-family:var(--mono);font-size:17px;font-weight:800;cursor:pointer;
+       background:linear-gradient(120deg,color-mix(in oklab,var(--day) 80%,#000),color-mix(in oklab,var(--day) 55%,#000));
+       box-shadow:0 6px 20px color-mix(in oklab,var(--day) 40%,transparent)}
+  .timer.run{}
+  /* RWD: mobile-first; two-column layout on wider screens */
+  @media (min-width:768px){
+    .wrap{max-width:800px}
+    .hero h1{font-size:52px}
+    #list{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+    #list .loading{grid-column:1/-1}
+    .ex{margin:0}
+    #hist{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .hist-item{margin-bottom:0}
+    .savebar .inner{max-width:768px}
+  }
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-  @media (max-width:360px){.mach{width:76px;flex:0 0 76px;height:62px}}
+  @media (max-width:360px){.mach{width:76px;flex:0 0 76px;height:60px}.hero h1{font-size:38px}}
   /* ---- 登入畫面 ---- */
   .gate{max-width:380px;margin:14vh auto;padding:0 20px;text-align:center}
-  .gate h1{font-size:24px;margin:0 0 6px}
+  .gate h1{font-size:32px;font-weight:900;margin:0 0 6px}
   .gate p{color:var(--dim);font-size:13.5px;margin:0 0 22px;line-height:1.6}
-  .gate input{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  .gate input{width:100%;background:var(--panel);border:2px solid var(--line);border-radius:12px;
        padding:14px;color:var(--text);font-size:16px;font-family:inherit;margin-bottom:10px}
   .gate input:focus{outline:none;border-color:var(--day)}
-  .gate button{width:100%;background:var(--day);color:#fff;border:none;border-radius:10px;
-       padding:14px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer}
+  .gate button{width:100%;color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;
+       font-weight:900;font-family:inherit;cursor:pointer;
+       background:linear-gradient(120deg,color-mix(in oklab,var(--day) 80%,#000),color-mix(in oklab,var(--day) 55%,#000))}
   .gate button:disabled{opacity:.5}
   .gate .msg{margin-top:14px;font-size:13px;color:var(--dim);line-height:1.6;min-height:20px}
-  .gate .msg.ok{color:var(--good)}
-  .gate .msg.bad{color:var(--bad)}
-  .who{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;
-       color:var(--dimmer);margin-top:8px}
-  .who button{background:none;border:none;color:var(--dim);font-family:var(--mono);font-size:11px;
-       text-decoration:underline;cursor:pointer;padding:0}
-  .who select{margin-left:auto;background:var(--panel);border:1px solid var(--line);color:var(--dim);
-       font-family:var(--mono);font-size:11px;border-radius:6px;padding:3px 6px}
+  .gate .msg.ok{color:var(--up)}
+  .gate .msg.bad{color:var(--down)}
 </style>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2312161D'/%3E%3Crect x='6' y='29' width='52' height='6' rx='3' fill='%2398A2B0'/%3E%3Crect x='12' y='14' width='8' height='36' rx='3' fill='%231E63D8'/%3E%3Crect x='22' y='20' width='7' height='24' rx='3' fill='%23F0B429'/%3E%3Crect x='35' y='20' width='7' height='24' rx='3' fill='%23F0B429'/%3E%3Crect x='44' y='14' width='8' height='36' rx='3' fill='%2317A05B'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2312161D'/%3E%3Crect x='6' y='29' width='52' height='6' rx='3' fill='%2398A2B0'/%3E%3Crect x='12' y='14' width='8' height='36' rx='3' fill='%23FF5A3C'/%3E%3Crect x='22' y='20' width='7' height='24' rx='3' fill='%2338BDF8'/%3E%3Crect x='35' y='20' width='7' height='24' rx='3' fill='%2338BDF8'/%3E%3Crect x='44' y='14' width='8' height='36' rx='3' fill='%23A3E635'/%3E%3C/svg%3E">
 </head>
 <body>
 
@@ -236,18 +197,12 @@ document.documentElement.dataset.theme = localStorage.getItem("ppl_theme") || ""
 <!-- 主畫面 -->
 <div id="app" hidden>
   <div class="wrap">
-    <header>
-      <div class="kicker">90-DAY / PUSH · PULL · LEGS</div>
-      <h1>訓練記錄表</h1>
-      <div class="sub">先看「上次」的數字，再決定今天填多少。</div>
-      <div class="who"><span id="whoami"></span><button id="logout">登出</button>
-        <select id="themepick" aria-label="佈景主題">
-          <option value="">原有</option>
-          <option value="wenqing">文青</option>
-          <option value="plain">樸素</option>
-          <option value="hype">熱血</option>
-        </select>
-      </div>
+    <header class="hero">
+      <div class="k">90-DAY CHALLENGE</div>
+      <h1 id="herotitle">推<small>PUSH DAY</small></h1>
+      <div class="streak"><span id="weekstat">本週 – / 3 次</span>
+        <div class="dots" id="weekdots"><i></i><i></i><i></i></div></div>
+      <div class="who"><span id="whoami"></span><button id="logout">登出</button></div>
     </header>
 
     <div id="banner" class="banner" hidden></div>
@@ -267,7 +222,7 @@ document.documentElement.dataset.theme = localStorage.getItem("ppl_theme") || ""
 
     <div class="hist">
       <div class="hist-head">
-        <h2>這天的歷史紀錄</h2>
+        <h2>戰績</h2>
         <span class="syncstat" id="syncstat"></span>
       </div>
       <div id="hist"></div>
@@ -284,7 +239,7 @@ document.documentElement.dataset.theme = localStorage.getItem("ppl_theme") || ""
   </div>
 
   <div class="savebar"><div class="inner">
-    <button class="save" id="save">儲存這次訓練</button>
+    <button class="save" id="save">收工，今天贏了</button>
     <button class="ghost" id="clear">清空</button>
   </div></div>
   <button class="timer" id="timer" hidden></button>
@@ -549,13 +504,6 @@ $("sendlink").onclick = async ()=>{
 };
 $("logout").onclick = async ()=>{ await sb.auth.signOut(); location.reload(); };
 
-/* ---------- Theme switcher (per device, localStorage) ---------- */
-$("themepick").value = localStorage.getItem("ppl_theme") || "";
-$("themepick").onchange = ()=>{
-  const v = $("themepick").value;
-  document.documentElement.dataset.theme = v;
-  if(v) localStorage.setItem("ppl_theme", v); else localStorage.removeItem("ppl_theme");
-};
 
 sb.auth.onAuthStateChange((_e, session)=>{
   const u = session && session.user;
@@ -576,7 +524,21 @@ async function enterApp(){
   renderTabs();
   await loadPrefs();
   await loadDay(day);
+  loadWeek();
   await flushPending();  // resend anything saved while offline last time
+}
+
+/* weekly training count (distinct dates since Monday) for the hero streak */
+async function loadWeek(){
+  const now = new Date(), mon = new Date(now);
+  mon.setDate(now.getDate() - (now.getDay()+6)%7);
+  const p = n => String(n).padStart(2,"0");
+  const ms = mon.getFullYear()+"-"+p(mon.getMonth()+1)+"-"+p(mon.getDate());
+  const { data, error } = await sb.from("workout_logs").select("log_date").gte("log_date", ms).limit(500);
+  if(error) return;
+  const n = new Set((data||[]).map(r=>r.log_date)).size;
+  $("weekstat").textContent = "本週 "+n+" / 3 次";
+  $("weekdots").innerHTML = [0,1,2].map(i=>'<i class="'+(i<n?"f":"")+'"></i>').join("");
 }
 
 /* ---------- Rest timer: filling in a weight = set done, start the clock ---------- */
@@ -586,11 +548,12 @@ function startRest(){
   clearInterval(restTick);
   let left = REST_SECONDS;
   const el = $("timer");
+  const fmt = s => Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
   el.hidden = false; el.classList.add("run");
-  el.textContent = "休息 " + left + "s";
+  el.textContent = fmt(left);
   restTick = setInterval(()=>{
     left--;
-    if(left > 0){ el.textContent = "休息 " + left + "s"; return; }
+    if(left > 0){ el.textContent = fmt(left); return; }
     clearInterval(restTick);
     el.classList.remove("run");
     el.textContent = "開始下一組";
@@ -695,6 +658,7 @@ async function saveSession(date){
   $("banner").hidden = true;
   toast("已儲存 "+date);
   await loadDay(day);
+  loadWeek();
 }
 
 $("save").onclick = ()=> saveSession($("date").value || todayStr());
@@ -708,8 +672,7 @@ $("clear").onclick = ()=>{
 function renderTabs(){
   $("tabs").innerHTML = Object.entries(DAYS).map(([k,d])=>
     '<button class="tab" role="tab" data-day="'+k+'" style="--c:'+d.color+'" aria-selected="'+(k===day)+'">'+
-    '<span class="l">DAY '+k+' · '+d.en+'</span><span class="n">'+d.name+'</span>'+
-    '<span class="g">'+d.groups+'</span></button>').join("");
+    d.name+' '+k+'</button>').join("");
   $("tabs").querySelectorAll(".tab").forEach(b=>{
     b.onclick = async ()=>{ day=b.dataset.day; ready=false; render();
       window.scrollTo({top:0,behavior:"smooth"}); await loadDay(day); };
@@ -749,21 +712,25 @@ function sparkline(i){
 function render(){
   const d = DAYS[day];
   document.documentElement.style.setProperty("--day", d.color);
+  $("herotitle").innerHTML = d.name+'<small>'+d.en+' DAY</small>';
   renderTabs();
   if(!ready){ $("list").innerHTML = '<div class="loading">載入中…</div>'; return; }
   const prev = lastSession();
 
   $("list").innerHTML = exList(day).map((e,i)=>{
     const p = prev ? bestOf(prev.data[i]) : null;
-    const prevTxt = p
-      ? '<b>上次</b> '+p.w+' kg × '+(p.r||"–")+' 下 <span class="delta" data-i="'+i+'">今天？</span>'
-      : '<b>上次</b> 尚無紀錄 — 今天先試出一個 RIR 2 的重量';
+    const bigTxt = p
+      ? '<div class="big"><span class="w">'+p.w+'<small>kg</small></span>'+
+        '<span class="delta" data-i="'+i+'">今天？</span></div>'+
+        '<div class="sub">上次最重 '+p.w+' kg × '+(p.r||"–")+' 下，今天的目標是超過它</div>'
+      : '<div class="big"><span class="w">–<small>kg</small></span></div>'+
+        '<div class="sub">尚無紀錄，今天先試出一個 RIR 2 的重量</div>';
     return '<div class="ex"><div class="ex-h">'+ICONS[e.icon]+
       '<div class="ex-t"><div class="ex-top"><div><div class="ex-zh">'+esc(e.zh)+'</div>'+
       (e.en?'<div class="ex-en">'+e.en+'</div>':'')+'</div>'+
       (e.target?'<div class="ex-target">'+e.target+'</div>':'')+'</div>'+
       (e.id?'<div class="ex-id">'+e.id+'</div>':'')+'</div></div>'+
-      '<div class="prev">'+prevTxt+'</div>'+sparkline(i)+
+      bigTxt+sparkline(i)+
       '<div class="col-h"><span></span><span>重量</span><span>次數</span></div><div class="sets">'+
       [1,2,3].map(n=>'<div class="set"><div class="set-n">'+n+'</div>'+
         '<div class="field"><input type="number" inputmode="decimal" step="0.5" min="0" placeholder="'+
@@ -771,8 +738,9 @@ function render(){
         '<div class="field"><input type="number" inputmode="numeric" step="1" min="0" value="10"'+
           ' data-ex="'+i+'" data-set="'+(n-1)+'" data-f="r"><span class="u">下</span></div>'+
         '</div>').join("")+'</div>'+
+      '<div class="done" data-i="'+i+'">今天已經比上次強了</div>'+
       (e.alt.length?'<details class="alt"><summary>找不到這台？替代動作</summary><div class="alt-body"><ul>'+
-      e.alt.map(a=>'<li>'+a+'</li>').join("")+'</ul><div class="why">'+e.why+'</div></div></details>':'')+'</div>';
+      e.alt.map(a=>'<li>'+a+'</li>').join("")+'</ul><div class="why">'+e.why+'</div></div></details>':'<div class="padend"></div>')+'</div>';
   }).join("");
 
   $("list").querySelectorAll("input[data-f='w']").forEach(inp=>{
@@ -822,11 +790,14 @@ function updateDelta(i){
   const prev = lastSession(); const p = prev ? bestOf(prev.data[i]) : null; if(!p) return;
   const vals=[...$("list").querySelectorAll('input[data-ex="'+i+'"][data-f="w"]')]
     .map(x=>parseFloat(x.value)).filter(v=>!isNaN(v));
-  if(!vals.length){ chip.className="delta"; chip.textContent="今天？"; return; }
+  const done = $("list").querySelector('.done[data-i="'+i+'"]');
+  if(!vals.length){ chip.className="delta"; chip.textContent="今天？";
+    if(done) done.classList.remove("show"); return; }
   const diff = Math.max(...vals) - parseFloat(p.w);
-  if(diff>0){ chip.className="delta up"; chip.textContent="+"+(+diff.toFixed(1))+" kg"; }
+  if(diff>0){ chip.className="delta up"; chip.textContent="↑ +"+(+diff.toFixed(1)); }
   else if(diff===0){ chip.className="delta same"; chip.textContent="持平"; }
-  else { chip.className="delta down"; chip.textContent=(+diff.toFixed(1))+" kg"; }
+  else { chip.className="delta down"; chip.textContent="↓ "+(+diff.toFixed(1)); }
+  if(done) done.classList.toggle("show", diff>0);
 }
 
 function renderHist(){
