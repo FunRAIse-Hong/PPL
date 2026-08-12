@@ -125,6 +125,19 @@
   .foot li{margin-bottom:5px}
   .loading{color:var(--dimmer);font-family:var(--mono);font-size:12px;padding:20px 0}
   .spark{display:block;width:100%;height:56px;margin:8px 0 0}
+  .editex{margin:14px 0 0;border:1px dashed var(--line);border-radius:10px;padding:10px 13px;
+       font-size:13.5px;color:var(--dim)}
+  .editex summary{cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.15em;
+       color:var(--dimmer);text-transform:uppercase}
+  .editrow{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line)}
+  .editrow input[type=checkbox]{accent-color:var(--day);width:17px;height:17px}
+  .editrow .rm{margin-left:auto;background:none;border:1px solid var(--line);color:var(--dim);
+       border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer}
+  .addrow{display:flex;gap:8px;margin-top:10px}
+  .addrow input{flex:1;min-width:0;background:var(--panel-2);border:1px solid var(--line);
+       border-radius:8px;padding:9px;color:var(--text);font-size:14px;font-family:inherit}
+  .addrow button{background:var(--day);border:none;color:#fff;border-radius:8px;
+       padding:9px 14px;font-size:14px;cursor:pointer}
   .timer{position:fixed;right:14px;bottom:112px;z-index:50;border:1px solid var(--line);
        background:var(--panel);color:var(--text);border-radius:999px;padding:11px 16px;
        font-family:var(--mono);font-size:14px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4)}
@@ -188,6 +201,11 @@
 
     <div id="list"><div class="loading">載入中…</div></div>
 
+    <details class="editex">
+      <summary>編輯動作清單</summary>
+      <div id="editbody"></div>
+    </details>
+
     <div class="hist">
       <div class="hist-head">
         <h2>這天的歷史紀錄</h2>
@@ -241,6 +259,11 @@ const base = '<path d="M8,90 H122" stroke="'+G+'" stroke-width="2.5"/>';
 const stack = '<path d="M104,36 h16 v48 h-16 z M104,46 h16 M104,56 h16 M104,66 h16" stroke="'+G+'" stroke-width="2"/>';
 
 const ICONS = {
+/* generic dumbbell for user-added exercises */
+_custom: svg(base+
+  '<path d="M40,50 H90" stroke="'+H+'" stroke-width="4"/>'+
+  '<path d="M36,32 V68 M94,32 V68" stroke="'+D+'" stroke-width="8"/>'+
+  '<path d="M25,38 V62 M105,38 V62" stroke="'+D+'" stroke-width="6"/>'),
 chestPress: svg(base+stack+
   '<path d="M100,90 V22" stroke="'+G+'" stroke-width="2.5"/>'+
   '<path d="M44,66 H74 M44,66 L39,40" stroke="'+G+'" stroke-width="2.5"/>'+
@@ -415,6 +438,36 @@ let day = "A";
 let ready = false;
 let user = null;
 
+/* ---------- Custom exercise list (user_settings.days) ---------- */
+const emptyPrefs = () => ({A:{hidden:[],custom:[]},B:{hidden:[],custom:[]},C:{hidden:[],custom:[]}});
+let prefs = emptyPrefs();
+const esc = s => String(s).replace(/[&<>"']/g,
+  c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* the exercises actually shown for a day: defaults minus hidden, plus customs */
+function exList(k){
+  const p = prefs[k] || {};
+  return DAYS[k].ex.filter(e => !(p.hidden||[]).includes(e.zh))
+    .concat((p.custom||[]).map(zh => ({zh, en:"", target:"", icon:"_custom", id:"", alt:[], why:""})));
+}
+
+/* Only allow saving prefs after a successful load — otherwise an upsert of the
+   in-memory defaults would wipe the customization stored on the server. */
+let prefsLoaded = false;
+async function loadPrefs(){
+  const { data, error } = await sb.from("user_settings").select("days").maybeSingle();
+  if(error) return;                 // prefsLoaded stays false, edits are blocked
+  if(data && data.days) prefs = {...emptyPrefs(), ...data.days};
+  prefsLoaded = true;
+}
+async function savePrefs(){
+  if(!prefsLoaded) await loadPrefs();   // one retry before giving up
+  if(!prefsLoaded){ showBanner("動作清單尚未載入，暫時無法修改。請檢查連線後重新整理。"); return; }
+  const { error } = await sb.from("user_settings")
+    .upsert({ user_id: user.id, days: prefs, updated_at: new Date().toISOString() });
+  if(error) showBanner("動作清單儲存失敗：" + error.message);
+}
+
 const $ = id => document.getElementById(id);
 const todayStr = () => { const d=new Date(), p=n=>String(n).padStart(2,"0");
   return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); };
@@ -454,6 +507,7 @@ async function enterApp(){
   $("whoami").textContent = user.email;
   $("date").value = todayStr();
   renderTabs();
+  await loadPrefs();
   await loadDay(day);
   await flushPending();  // resend anything saved while offline last time
 }
@@ -494,8 +548,8 @@ async function loadDay(k){
 
   const byDate = {};
   (data||[]).forEach(r=>{
-    if(!byDate[r.log_date]) byDate[r.log_date] = DAYS[k].ex.map(()=>[null,null,null]);
-    const i = DAYS[k].ex.findIndex(e=>e.zh===r.exercise);
+    if(!byDate[r.log_date]) byDate[r.log_date] = exList(k).map(()=>[null,null,null]);
+    const i = exList(k).findIndex(e=>e.zh===r.exercise);
     if(i<0 || r.set_no>3) return;
     byDate[r.log_date][i][r.set_no-1] = {w:String(r.weight), r:String(r.reps==null?"":r.reps)};
   });
@@ -551,7 +605,7 @@ window.addEventListener("online", flushPending);
 /* ---------- 儲存：先刪掉這天這個分項，再寫入現在的內容 ---------- */
 async function saveSession(date){
   const rows = [];
-  DAYS[day].ex.forEach((e,i)=>{
+  exList(day).forEach((e,i)=>{
     [0,1,2].forEach(n=>{
       const w = $("list").querySelector('input[data-ex="'+i+'"][data-set="'+n+'"][data-f="w"]').value;
       const r = $("list").querySelector('input[data-ex="'+i+'"][data-set="'+n+'"][data-f="r"]').value;
@@ -579,7 +633,7 @@ async function saveSession(date){
 $("save").onclick = ()=> saveSession($("date").value || todayStr());
 $("clear").onclick = ()=>{
   $("list").querySelectorAll("input").forEach(i=>{ if(i.dataset.f==="w") i.value=""; });
-  DAYS[day].ex.forEach((_,i)=>updateDelta(i));
+  exList(day).forEach((_,i)=>updateDelta(i));
   toast("已清空輸入欄");
 };
 
@@ -616,7 +670,7 @@ function sparkline(i){
   const y = w => max===min ? H/2 : PY + (H-2*PY)*(1-(w-min)/(max-min));
   const last = pts[pts.length-1];
   return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMinYMid meet" '+
-    'role="img" aria-label="'+DAYS[day].ex[i].zh+' 重量趨勢，最近 '+pts.length+' 次">'+
+    'role="img" aria-label="'+esc(exList(day)[i].zh)+' 重量趨勢，最近 '+pts.length+' 次">'+
     '<path d="'+pts.map((p,k)=>(k?"L":"M")+x(k).toFixed(1)+","+y(p.w).toFixed(1)).join(" ")+'"'+
     ' stroke="var(--day)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'+
     pts.map((p,k)=>'<circle cx="'+x(k).toFixed(1)+'" cy="'+y(p.w).toFixed(1)+'" r="4" fill="var(--day)">'+
@@ -632,15 +686,16 @@ function render(){
   if(!ready){ $("list").innerHTML = '<div class="loading">載入中…</div>'; return; }
   const prev = lastSession();
 
-  $("list").innerHTML = d.ex.map((e,i)=>{
+  $("list").innerHTML = exList(day).map((e,i)=>{
     const p = prev ? bestOf(prev.data[i]) : null;
     const prevTxt = p
       ? '<b>上次</b> '+p.w+' kg × '+(p.r||"–")+' 下 <span class="delta" data-i="'+i+'">今天？</span>'
       : '<b>上次</b> 尚無紀錄 — 今天先試出一個 RIR 2 的重量';
     return '<div class="ex"><div class="ex-h">'+ICONS[e.icon]+
-      '<div class="ex-t"><div class="ex-top"><div><div class="ex-zh">'+e.zh+'</div>'+
-      '<div class="ex-en">'+e.en+'</div></div><div class="ex-target">'+e.target+'</div></div>'+
-      '<div class="ex-id">'+e.id+'</div></div></div>'+
+      '<div class="ex-t"><div class="ex-top"><div><div class="ex-zh">'+esc(e.zh)+'</div>'+
+      (e.en?'<div class="ex-en">'+e.en+'</div>':'')+'</div>'+
+      (e.target?'<div class="ex-target">'+e.target+'</div>':'')+'</div>'+
+      (e.id?'<div class="ex-id">'+e.id+'</div>':'')+'</div></div>'+
       '<div class="prev">'+prevTxt+'</div>'+sparkline(i)+
       '<div class="col-h"><span></span><span>重量</span><span>次數</span></div><div class="sets">'+
       [1,2,3].map(n=>'<div class="set"><div class="set-n">'+n+'</div>'+
@@ -649,8 +704,8 @@ function render(){
         '<div class="field"><input type="number" inputmode="numeric" step="1" min="0" value="10"'+
           ' data-ex="'+i+'" data-set="'+(n-1)+'" data-f="r"><span class="u">下</span></div>'+
         '</div>').join("")+'</div>'+
-      '<details class="alt"><summary>找不到這台？替代動作</summary><div class="alt-body"><ul>'+
-      e.alt.map(a=>'<li>'+a+'</li>').join("")+'</ul><div class="why">'+e.why+'</div></div></details></div>';
+      (e.alt.length?'<details class="alt"><summary>找不到這台？替代動作</summary><div class="alt-body"><ul>'+
+      e.alt.map(a=>'<li>'+a+'</li>').join("")+'</ul><div class="why">'+e.why+'</div></div></details>':'')+'</div>';
   }).join("");
 
   $("list").querySelectorAll("input[data-f='w']").forEach(inp=>{
@@ -658,6 +713,41 @@ function render(){
     inp.addEventListener("change", ()=>{ if(inp.value) startRest(); });
   });
   renderHist();
+  renderEdit();
+}
+
+/* ---------- Edit the exercise list: hide defaults, add/remove customs ---------- */
+function renderEdit(){
+  const p = prefs[day] || (prefs[day] = {hidden:[], custom:[]});
+  $("editbody").innerHTML =
+    DAYS[day].ex.map(e =>
+      '<label class="editrow"><input type="checkbox" data-zh="'+esc(e.zh)+'"'+
+      ((p.hidden||[]).includes(e.zh)?'':' checked')+'> '+esc(e.zh)+'</label>').join("")+
+    (p.custom||[]).map(zh =>
+      '<div class="editrow">'+esc(zh)+'（自訂）<button class="rm" data-zh="'+esc(zh)+'">移除</button></div>').join("")+
+    '<div class="addrow"><input id="newex" maxlength="20" placeholder="新增自訂動作，如：腿內收機">'+
+    '<button id="addex">新增</button></div>';
+
+  $("editbody").querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+    cb.onchange = async ()=>{
+      const zh = cb.dataset.zh;
+      p.hidden = cb.checked ? (p.hidden||[]).filter(x=>x!==zh) : [...(p.hidden||[]), zh];
+      await savePrefs(); await loadDay(day);
+    };
+  });
+  $("editbody").querySelectorAll(".rm").forEach(b=>{
+    b.onclick = async ()=>{
+      p.custom = (p.custom||[]).filter(x=>x!==b.dataset.zh);
+      await savePrefs(); await loadDay(day);   // logged sets stay in the DB, just not shown
+    };
+  });
+  $("addex").onclick = async ()=>{
+    const zh = $("newex").value.trim();
+    if(!zh) return;
+    if(DAYS[day].ex.some(e=>e.zh===zh) || (p.custom||[]).includes(zh)){ toast("已經有這個動作了"); return; }
+    p.custom = [...(p.custom||[]), zh];
+    await savePrefs(); await loadDay(day);
+  };
 }
 
 function updateDelta(i){
@@ -676,9 +766,9 @@ function renderHist(){
   const arr=[...state[day]].reverse().slice(0,6);
   if(!arr.length){ $("hist").innerHTML='<div class="empty">還沒有 Day '+day+' 的紀錄。</div>'; return; }
   $("hist").innerHTML = arr.map(s=>{
-    const lines = DAYS[day].ex.map((e,i)=>{
+    const lines = exList(day).map((e,i)=>{
       const sets=(s.data[i]||[]).filter(x=>x&&x.w).map(x=>x.w+"×"+(x.r||"?")).join("  ");
-      return sets ? e.zh+" &nbsp;"+sets : null;
+      return sets ? esc(e.zh)+" &nbsp;"+sets : null;
     }).filter(Boolean);
     return '<div class="hist-item"><div class="d">'+s.date+'</div>'+lines.join("<br>")+'</div>';
   }).join("");

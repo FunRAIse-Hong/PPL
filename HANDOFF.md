@@ -24,9 +24,9 @@ App 的唯一核心任務：**讓他在健身房現場，30 秒內看到「上�
 
 | 檔案 | 狀態 | 說明 |
 |---|---|---|
-| `ppl-log-supabase.html` | **主線，待部署** | Supabase 版，多人、跨裝置。這是要繼續發展的版本 |
-| `supabase-setup.sql` | 完成，未執行 | 建表 + RLS + grants。使用者尚未在自己的專案跑過 |
-| `ppl-training-log.html` | 舊版，僅供參考 | 跑在 Claude 對話沙箱裡的版本，持久化功能壞掉（見第 5 節）。**不要繼續維護，但裡面的器械 SVG 圖和動作資料值得沿用** |
+| `index.html` | **主線，已上線** | https://funraise-hong.github.io/PPL/ ，Supabase 版，多人、跨裝置 |
+| `supabase-setup.sql` | 已執行 | 建表 + RLS + grants（`user_settings` 段落 2026-08-12 新增，需在 SQL Editor 補跑） |
+| `magic-link.sh` / `Makefile` | 工具 | `make link <email>` 免寄信產生登入連結（需 service_role key）；`make serve` 本機預覽 |
 
 ---
 
@@ -43,8 +43,7 @@ App 的唯一核心任務：**讓他在健身房現場，30 秒內看到「上�
 ### 為什麼不用 Notion 當後端
 
 Notion API 需要 secret key，不能放前端。要藏就得自架伺服器，那不如直接用 Supabase。
-
-**但 Notion 仍有角色**：Hong 已經有一個 Notion 訓練資料庫在用（見第 7 節），適合當**個人報表 / 長期趨勢檢視**。可以考慮做單向匯出（Supabase → Notion），但**不要**讓 Notion 成為 App 的資料來源。
+（2026-08-12：Notion 整合已整個取消，包括原本考慮的單向匯出。）
 
 ### 資料模型：一列 = 一組
 
@@ -60,7 +59,7 @@ workout_logs
 
 ---
 
-## 4. Supabase 設定步驟（使用者尚未完成）
+## 4. Supabase 設定步驟（已完成，留作參考）
 
 1. supabase.com 開新專案（免費方案）
 2. SQL Editor 執行 `supabase-setup.sql` 全部
@@ -133,39 +132,27 @@ Hong 明確反映過「**看名字不知道是哪台，廠牌不同名稱也不�
 
 ---
 
-## 7. Hong 現有的 Notion 資料庫（已存在，可整合）
+## 7. 待辦（依優先順序）
 
-- 位置：Notion「📖 Codex」頁面 → Hit the gym
-- Data source ID：`1f4265a4-a4fd-438b-b1bc-07182962bcc9`
-- 欄位：`紀錄`(title) / `日期`(date) / `分項`(select 推 A、拉 B、腿 C) / `動作`(select，12 個選項) / `重量` / `次數` / `組數` / `總量`(formula) / `RIR` / `備註`
-- 已建立「依動作看進度」檢視（依動作分組、日期新到舊）
-- 建立日期格式需用：`"date:日期:start": "YYYY-MM-DD"`、`"date:日期:is_datetime": 0`
-
-**目前是空的或近乎空的**，因為同步功能未能驗證成功。
-
----
-
-## 8. 待辦（依優先順序）
-
-### P0 — 讓它真的能用
-- [ ] 協助 Hong 完成 Supabase 專案建立與 SQL 執行
-- [ ] 填入 URL / anon key，部署到 Cloudflare Pages
-- [ ] **驗證 RLS**：用兩個帳號實測資料隔離。跑 `select relname, relrowsecurity from pg_class where relname='workout_logs';` 確認為 `true`
-- [ ] 實機測試：手機填 → 電腦開 → 資料在
+### P0 — 讓它真的能用（2026-08-11 完成）
+- [x] Supabase 專案建立與 SQL 執行
+- [x] 填入 URL / publishable key，部署到 GitHub Pages（repo 轉公開；帳號是個人免費方案，非企業版）：https://funraise-hong.github.io/PPL/
+- [x] **驗證 RLS**：匿名寫入被 42501 擋下、匿名讀取回空陣列
+- [x] 實機測試：離線佇列全流程實測通過
 
 ### P1 — 現場使用體驗（2026-08-11 完成）
 - [x] **離線容錯**：儲存失敗且離線時暫存到 localStorage（`ppl_pending`），恢復連線（`online` 事件或下次開啟）自動補送
 - [x] RIR 欄位：**決定不加 UI**。多一欄多一分填寫負擔，與 30 分鐘目標衝突；schema 保留，未來要加隨時可加
 - [x] 組間休息計時器：填完重量（change 事件）自動起跳 70 秒倒數，右下角浮動顯示，結束震動提示，點擊可關閉
 
-### P2 — 加值
-- [ ] 動作進度圖表（同一動作的重量隨時間變化）
-- [ ] 匯出到 Notion（單向，當報表用）
-- [ ] 動作清單改成可自訂（目前 12 個動作寫死在 `DAYS` 常數裡）
+### P2 — 加值（2026-08-12 完成）
+- [x] 動作進度圖表：每個動作卡片內的 sparkline（每次訓練最重一組，最近 10 次）
+- [x] ~~匯出到 Notion~~ 已取消，Notion 整合不做
+- [x] 動作清單可自訂：`user_settings.days` jsonb（隱藏預設動作、新增自訂動作），UI 在動作列表下方「編輯動作清單」
 
 ---
 
-## 9. 請不要做的事
+## 8. 請不要做的事
 
 - **不要為了「未來可能有很多使用者」先做複雜架構。** 目前實際使用者是 1 人。Supabase 免費額度到 5 萬 MAU
 - **不要把 RLS 拿掉或改成前端過濾。** 這是唯一的安全防線
@@ -175,7 +162,7 @@ Hong 明確反映過「**看名字不知道是哪台，廠牌不同名稱也不�
 
 ---
 
-## 10. 給接手者的一句話
+## 9. 給接手者的一句話
 
 這個專案在工具本身花掉的時間，已經遠超過它對訓練成果的貢獻。**優先把 P0 做完讓它能用，然後就停手。**
 

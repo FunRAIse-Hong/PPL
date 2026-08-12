@@ -55,6 +55,25 @@ grant usage on schema public to authenticated;
 grant select, insert, update, delete on public.workout_logs to authenticated;
 
 -- ============================================================
+--  6. 使用者設定：自訂動作清單（隱藏預設動作 / 新增自訂動作）
+--     一人一列，days 是 {A:{hidden:[...],custom:[...]}, B:..., C:...}
+-- ============================================================
+create table if not exists public.user_settings (
+  user_id     uuid primary key default auth.uid()
+              references auth.users(id) on delete cascade,
+  days        jsonb not null default '{}'::jsonb,
+  updated_at  timestamptz not null default now()
+);
+
+alter table public.user_settings enable row level security;
+
+drop policy if exists "own settings" on public.user_settings;
+create policy "own settings" on public.user_settings
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+grant select, insert, update, delete on public.user_settings to authenticated;
+
+-- ============================================================
 --  驗證：跑完後在 SQL Editor 執行下面這行，應該看到 rowsecurity = true
 --  select relname, relrowsecurity from pg_class where relname = 'workout_logs';
 -- ============================================================
