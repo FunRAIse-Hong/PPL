@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>設計稿：文青</title>
+<style>
+  :root{
+    --paper:#F7F4ED; --ink:#33302A; --dim:#7A7365; --faint:#B8B0A0; --line:#E2DCCE;
+    --day:#4A628E;
+    --serif:"Noto Serif TC","Songti TC","PMingLiU",Georgia,serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;
+       line-height:1.7;padding:0 0 110px}
+  .wrap{max-width:440px;margin:0 auto;padding:0 24px}
+
+  header{padding:40px 0 8px;text-align:center}
+  .date{font-size:13px;letter-spacing:.3em;color:var(--dim)}
+  h1{font-size:22px;font-weight:600;letter-spacing:.5em;text-indent:.5em;margin:10px 0 0}
+  .rule{width:36px;height:1px;background:var(--faint);margin:18px auto 0}
+
+  nav{display:flex;justify-content:center;gap:36px;padding:22px 0 6px}
+  nav a{color:var(--dim);text-decoration:none;font-size:17px;letter-spacing:.2em;padding:4px 2px}
+  nav a.on{color:var(--day);border-bottom:1px solid var(--day)}
+  nav a small{display:block;font-size:10px;letter-spacing:.15em;color:var(--faint);text-align:center}
+
+  .entry{padding:30px 0 26px;border-bottom:1px solid var(--line)}
+  .entry-h{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  .name{font-size:19px;font-weight:600;letter-spacing:.06em}
+  .name small{display:block;font-size:11px;color:var(--faint);letter-spacing:.1em;font-weight:400;margin-top:3px}
+  .target{font-size:12px;color:var(--dim);white-space:nowrap;margin-top:4px}
+  .mach{width:84px;height:64px;border:1px solid var(--line);border-radius:2px;background:#FFFEFA;flex:0 0 84px;margin-top:2px}
+  .idline{font-size:13px;color:var(--dim);margin:12px 0 0}
+  .idline b{color:var(--day);font-weight:600}
+
+  .last{margin:16px 0 4px;font-size:14px;color:var(--dim)}
+  .last b{color:var(--ink);font-weight:600;font-size:16px}
+  .delta{display:inline-block;margin-left:10px;font-size:12px;color:#3E7A52;letter-spacing:.05em}
+
+  .spark{display:block;width:100%;height:44px;margin:6px 0 14px}
+
+  .sets{display:grid;gap:2px}
+  .set{display:grid;grid-template-columns:22px 1fr 1fr;gap:18px;align-items:baseline}
+  .set-n{font-size:11px;color:var(--faint)}
+  .u-in{position:relative}
+  .u-in input{width:100%;background:none;border:none;border-bottom:1px solid var(--faint);
+       font-family:var(--serif);font-size:20px;color:var(--ink);padding:8px 26px 6px 2px;border-radius:0}
+  .u-in input:focus{outline:none;border-bottom-color:var(--day)}
+  .u-in input::placeholder{color:#D5CEBE}
+  .u-in .u{position:absolute;right:2px;bottom:10px;font-size:11px;color:var(--faint)}
+
+  .alt{margin-top:16px;font-size:12.5px;color:var(--faint)}
+  .alt a{color:var(--dim)}
+
+  .hist{padding:30px 0}
+  .hist h2{font-size:13px;font-weight:600;letter-spacing:.4em;color:var(--dim);text-align:center;margin:0 0 18px}
+  .hist-item{display:flex;gap:16px;font-size:13px;color:var(--dim);padding:8px 0;border-bottom:1px dashed var(--line)}
+  .hist-item .d{color:var(--faint);white-space:nowrap;letter-spacing:.05em}
+
+  .savebar{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,var(--paper) 75%,transparent);
+       padding:18px 24px;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+  .savebar .inner{max-width:392px;margin:0 auto;display:flex;gap:12px}
+  button.save{flex:1;background:var(--ink);color:var(--paper);border:none;border-radius:3px;
+       padding:16px;font-family:var(--serif);font-size:16px;letter-spacing:.4em;text-indent:.4em;cursor:pointer}
+  button.ghost{background:none;color:var(--dim);border:1px solid var(--faint);border-radius:3px;
+       padding:16px 18px;font-family:var(--serif);font-size:13px;cursor:pointer}
+
+  .timer{position:fixed;right:20px;bottom:120px;background:#FFFEFA;border:1px solid var(--line);
+       border-radius:2px;padding:10px 16px;font-size:13px;color:var(--day);letter-spacing:.1em;
+       box-shadow:0 2px 12px rgba(51,48,42,.08)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="date">二〇二六 · 八月十二日</div>
+    <h1>訓練手帖</h1>
+    <div class="rule"></div>
+  </header>
+
+  <nav>
+    <a class="on" href="#">推<small>PUSH</small></a>
+    <a href="#">拉<small>PULL</small></a>
+    <a href="#">腿<small>LEGS</small></a>
+  </nav>
+
+  <div class="entry">
+    <div class="entry-h">
+      <div>
+        <div class="name">胸推機<small>CHEST PRESS · 3 × 10–12</small></div>
+        <div class="idline"><b>背貼椅背</b>坐，握把在<b>胸口兩側</b>，往正前方推出去。</div>
+      </div>
+      <svg class="mach" viewBox="0 0 130 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8,90 H122" stroke="#B8B0A0" stroke-width="2.5"/>
+        <path d="M104,36 h16 v48 h-16 z M104,46 h16 M104,56 h16 M104,66 h16" stroke="#B8B0A0" stroke-width="2"/>
+        <path d="M100,90 V22" stroke="#B8B0A0" stroke-width="2.5"/>
+        <path d="M44,66 H74 M44,66 L39,40" stroke="#B8B0A0" stroke-width="2.5"/>
+        <circle cx="40" cy="30" r="6" stroke="#7A7365" stroke-width="2.5"/>
+        <path d="M42,37 L46,62 M46,62 H70 M70,62 V82" stroke="#7A7365" stroke-width="2.5"/>
+        <path d="M43,45 H64" stroke="#7A7365" stroke-width="2.5"/>
+        <circle cx="67" cy="45" r="4" stroke="#4A628E" stroke-width="2.5"/>
+        <path d="M71,45 H96 V26" stroke="#4A628E" stroke-width="2.5"/>
+        <path d="M74,58 H96" stroke="#4A628E" stroke-width="2.5"/>
+      </svg>
+    </div>
+
+    <div class="last">上次 <b>20 kg</b> × 10 下<span class="delta">今日 +2.5</span></div>
+    <svg class="spark" viewBox="0 0 280 44" preserveAspectRatio="xMinYMid meet">
+      <path d="M8,34 L60,30 L112,30 L164,22 L216,12" stroke="#4A628E" stroke-width="1.5" fill="none"/>
+      <circle cx="8" cy="34" r="2.5" fill="#4A628E"/><circle cx="60" cy="30" r="2.5" fill="#4A628E"/>
+      <circle cx="112" cy="30" r="2.5" fill="#4A628E"/><circle cx="164" cy="22" r="2.5" fill="#4A628E"/>
+      <circle cx="216" cy="12" r="2.5" fill="#4A628E"/>
+      <text x="228" y="16" fill="#7A7365" font-size="11">22.5</text>
+    </svg>
+
+    <div class="sets">
+      <div class="set"><span class="set-n">一</span>
+        <div class="u-in"><input inputmode="decimal" value="22.5"><span class="u">kg</span></div>
+        <div class="u-in"><input inputmode="numeric" value="10"><span class="u">下</span></div>
+      </div>
+      <div class="set"><span class="set-n">二</span>
+        <div class="u-in"><input inputmode="decimal" placeholder="20"><span class="u">kg</span></div>
+        <div class="u-in"><input inputmode="numeric" value="10"><span class="u">下</span></div>
+      </div>
+      <div class="set"><span class="set-n">三</span>
+        <div class="u-in"><input inputmode="decimal" placeholder="20"><span class="u">kg</span></div>
+        <div class="u-in"><input inputmode="numeric" value="10"><span class="u">下</span></div>
+      </div>
+    </div>
+    <div class="alt">找不到這台？<a href="#">替代動作</a></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-h">
+      <div>
+        <div class="name">肩推機<small>SHOULDER PRESS · 3 × 10–12</small></div>
+        <div class="idline">握把在<b>耳朵旁或肩膀上方</b>，往頭頂正上方推。</div>
+      </div>
+      <div class="mach"></div>
+    </div>
+    <div class="last">上次 <b>25 kg</b> × 10 下</div>
+    <div class="sets">
+      <div class="set"><span class="set-n">一</span>
+        <div class="u-in"><input inputmode="decimal" placeholder="25"><span class="u">kg</span></div>
+        <div class="u-in"><input inputmode="numeric" value="10"><span class="u">下</span></div>
+      </div>
+    </div>
+    <div class="alt">找不到這台？<a href="#">替代動作</a></div>
+  </div>
+
+  <div class="hist">
+    <h2>既往</h2>
+    <div class="hist-item"><span class="d">八月十日</span><span>胸推機 20×10 · 肩推機 25×10 · 蝴蝶機 20×10</span></div>
+    <div class="hist-item"><span class="d">八月六日</span><span>胸推機 20×10 · 肩推機 22.5×10</span></div>
+  </div>
+</div>
+
+<div class="timer">休息 ・ 六十八秒</div>
+<div class="savebar"><div class="inner">
+  <button class="save">記下今日</button>
+  <button class="ghost">清空</button>
+</div></div>
+</body>
+</html>

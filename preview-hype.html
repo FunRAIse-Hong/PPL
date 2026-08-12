@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>設計稿：熱血</title>
+<style>
+  :root{
+    --bg:#0C0C11; --panel:#16161F; --line:#2A2A3A; --text:#F5F5FF; --dim:#9C9CB8;
+    --day:#2E7CF6; --day-deep:#1B4FB8; --up:#3DDC84;
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;
+       line-height:1.5;padding:0 0 110px}
+  .wrap{max-width:440px;margin:0 auto;padding:0 16px}
+
+  .hero{background:linear-gradient(150deg,var(--day) 0%,var(--day-deep) 100%);
+       margin:0 -16px;padding:26px 20px 20px;border-radius:0 0 24px 24px}
+  .hero .k{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:rgba(255,255,255,.7)}
+  .hero h1{font-size:44px;font-weight:900;margin:2px 0 0;letter-spacing:-.02em;color:#fff;line-height:1.05}
+  .hero h1 small{font-size:16px;font-weight:800;letter-spacing:.12em;margin-left:10px;color:rgba(255,255,255,.85)}
+  .hero .streak{margin-top:14px;display:flex;align-items:center;gap:10px;color:#fff;font-size:13px;font-weight:600}
+  .dots{display:flex;gap:5px}
+  .dots i{width:22px;height:6px;border-radius:3px;background:rgba(255,255,255,.3)}
+  .dots i.f{background:#fff}
+
+  .daynav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 4px}
+  .daynav button{border:2px solid var(--line);background:var(--panel);border-radius:14px;padding:10px 0;
+       font-size:16px;font-weight:900;color:var(--dim);font-family:inherit;letter-spacing:.1em}
+  .daynav button.on{border-color:var(--day);color:#fff;background:linear-gradient(160deg,#1A2A4A,#16203A)}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;margin:12px 0;padding:16px}
+  .card-h{display:flex;justify-content:space-between;align-items:baseline}
+  .name{font-size:18px;font-weight:900}
+  .target{font-family:var(--mono);font-size:11px;color:var(--dim)}
+
+  .big{display:flex;align-items:baseline;gap:12px;margin:10px 0 2px}
+  .big .w{font-family:var(--mono);font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1}
+  .big .w small{font-size:15px;color:var(--dim);font-weight:600;margin-left:2px}
+  .up-pill{background:rgba(61,220,132,.14);border:1px solid rgba(61,220,132,.4);color:var(--up);
+       font-weight:900;font-size:15px;border-radius:999px;padding:4px 12px}
+  .sub{font-size:12px;color:var(--dim);margin-bottom:12px}
+
+  .bar{height:6px;border-radius:3px;background:var(--line);margin:0 0 14px;overflow:hidden}
+  .bar i{display:block;height:100%;width:72%;border-radius:3px;background:linear-gradient(90deg,var(--day),var(--up))}
+
+  .sets{display:grid;gap:9px}
+  .set{display:grid;grid-template-columns:26px 1fr 1fr;gap:9px;align-items:center}
+  .set-n{font-family:var(--mono);font-size:12px;color:var(--dim);text-align:center;font-weight:700}
+  .bx{position:relative}
+  .bx input{width:100%;background:#0F0F16;border:2px solid var(--line);border-radius:12px;height:54px;
+       padding:0 40px 0 14px;font-family:var(--mono);font-size:20px;font-weight:700;color:var(--text)}
+  .bx input:focus{outline:none;border-color:var(--day)}
+  .bx input::placeholder{color:#3A3A50}
+  .bx .u{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:var(--mono);
+       font-size:11px;color:var(--dim)}
+  .done{margin-top:10px;font-size:13px;font-weight:800;color:var(--up)}
+
+  .hist{margin:22px 0}
+  .hist h2{font-size:13px;font-weight:900;letter-spacing:.15em;color:var(--dim);margin:0 0 10px}
+  .hist-item{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;
+       margin-bottom:8px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .hist-item .d{color:var(--text);font-weight:700;margin-bottom:3px}
+
+  .savebar{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,var(--bg) 70%,transparent);
+       padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
+  .savebar .inner{max-width:408px;margin:0 auto;display:flex;gap:10px}
+  button.save{flex:1;background:linear-gradient(120deg,var(--day),#4A9CFF);color:#fff;border:none;
+       border-radius:16px;padding:18px;font-size:18px;font-weight:900;font-family:inherit;letter-spacing:.05em;
+       box-shadow:0 6px 24px rgba(46,124,246,.35)}
+  button.ghost{background:var(--panel);color:var(--dim);border:2px solid var(--line);border-radius:16px;
+       padding:18px;font-size:14px;font-weight:700;font-family:inherit}
+
+  .timer{position:fixed;right:16px;bottom:104px;background:linear-gradient(120deg,var(--day),#4A9CFF);
+       color:#fff;border-radius:999px;padding:13px 20px;font-family:var(--mono);font-size:17px;font-weight:800;
+       box-shadow:0 6px 20px rgba(46,124,246,.4)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="k">90-DAY CHALLENGE · DAY 47</div>
+    <h1>推<small>PUSH DAY</small></h1>
+    <div class="streak"><span>本週 2 / 3 次</span><div class="dots"><i class="f"></i><i class="f"></i><i></i></div></div>
+  </div>
+
+  <div class="daynav">
+    <button class="on">推 A</button>
+    <button>拉 B</button>
+    <button>腿 C</button>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><span class="name">胸推機</span><span class="target">3 × 10–12</span></div>
+    <div class="big"><span class="w">22.5<small>kg</small></span><span class="up-pill">↑ +2.5</span></div>
+    <div class="sub">上次 20 kg × 10 · 連續 3 次進步</div>
+    <div class="bar"><i></i></div>
+    <div class="sets">
+      <div class="set"><span class="set-n">1</span>
+        <div class="bx"><input inputmode="decimal" value="22.5"><span class="u">KG</span></div>
+        <div class="bx"><input inputmode="numeric" value="10"><span class="u">下</span></div>
+      </div>
+      <div class="set"><span class="set-n">2</span>
+        <div class="bx"><input inputmode="decimal" placeholder="20"><span class="u">KG</span></div>
+        <div class="bx"><input inputmode="numeric" value="10"><span class="u">下</span></div>
+      </div>
+      <div class="set"><span class="set-n">3</span>
+        <div class="bx"><input inputmode="decimal" placeholder="20"><span class="u">KG</span></div>
+        <div class="bx"><input inputmode="numeric" value="10"><span class="u">下</span></div>
+      </div>
+    </div>
+    <div class="done">今天已經比上次強了</div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><span class="name">肩推機</span><span class="target">3 × 10–12</span></div>
+    <div class="big"><span class="w">25<small>kg</small></span></div>
+    <div class="sub">上次 25 kg × 10 · 今天目標 27.5</div>
+    <div class="bar"><i style="width:58%"></i></div>
+    <div class="sets">
+      <div class="set"><span class="set-n">1</span>
+        <div class="bx"><input inputmode="decimal" placeholder="25"><span class="u">KG</span></div>
+        <div class="bx"><input inputmode="numeric" value="10"><span class="u">下</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hist">
+    <h2>戰績</h2>
+    <div class="hist-item"><div class="d">8/10</div>胸推機 20×10 · 肩推機 25×10 · 蝴蝶機 20×10</div>
+    <div class="hist-item"><div class="d">8/6</div>胸推機 20×10 · 肩推機 22.5×10</div>
+  </div>
+</div>
+
+<div class="timer">0:52</div>
+<div class="savebar"><div class="inner">
+  <button class="save">收工，今天贏了</button>
+  <button class="ghost">清空</button>
+</div></div>
+</body>
+</html>
