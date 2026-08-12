@@ -147,16 +147,11 @@
        background:linear-gradient(120deg,color-mix(in oklab,var(--day) 80%,#000),color-mix(in oklab,var(--day) 55%,#000));
        box-shadow:0 6px 20px color-mix(in oklab,var(--day) 40%,transparent)}
   .timer.run{}
-  /* RWD: mobile-first; two-column layout on wider screens */
+  /* RWD: mobile-first; wider screens keep ONE card per row, just more air */
   @media (min-width:768px){
-    .wrap{max-width:800px}
+    .wrap{max-width:560px}
     .hero h1{font-size:52px}
-    #list{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
-    #list .loading{grid-column:1/-1}
-    .ex{margin:0}
-    #hist{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .hist-item{margin-bottom:0}
-    .savebar .inner{max-width:768px}
+    .savebar .inner{max-width:528px}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
   @media (max-width:360px){.mach{width:76px;flex:0 0 76px;height:60px}.hero h1{font-size:38px}}
