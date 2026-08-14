@@ -199,7 +199,13 @@
     .top h1{font-size:38px}
     .savebar .inner{max-width:528px}
   }
-  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  /* 器械圖動態示意（先掛在 .anim 的圖上）：箭頭沿出力方向反覆描繪、會動的部位繞支點來回擺 */
+  .mach.anim path[marker-end]{stroke-dasharray:80;animation:machdraw 2s ease-in-out infinite}
+  @keyframes machdraw{0%{stroke-dashoffset:80}55%,100%{stroke-dashoffset:0}}
+  .mach.anim .mv{transform-box:view-box;animation:machswing 2s ease-in-out infinite}
+  @keyframes machswing{0%,100%{transform:rotate(0)}50%{transform:rotate(-14deg)}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}
+    .mach path[marker-end]{stroke-dasharray:none}}
   @media (max-width:360px){.mach{width:76px;flex:0 0 76px;height:60px}.top h1{font-size:28px}}
   /* ---- 登入畫面 ---- */
   .gate{max-width:380px;margin:14vh auto;padding:0 20px;text-align:center}
@@ -309,8 +315,8 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const G="#5C6675", H="#98A2B0", D="var(--day)";
 
 /* 器械示意圖：灰色是機器，藍/黃/綠是「會動的部位」與出力方向 */
-function svg(inner){
-  return '<svg class="mach" viewBox="0 0 130 100" fill="none" stroke-linecap="round" '+
+function svg(inner, cls){
+  return '<svg class="mach'+(cls?" "+cls:"")+'" viewBox="0 0 130 100" fill="none" stroke-linecap="round" '+
     'stroke-linejoin="round" aria-hidden="true">'+inner+'</svg>';
 }
 const seatedRight =  /* 側面：人朝右坐 */
@@ -331,9 +337,12 @@ chestPress: svg(base+stack+
   '<path d="M44,66 H74 M44,66 L39,40" stroke="'+G+'" stroke-width="2.5"/>'+
   seatedRight+
   '<path d="M43,45 H64" stroke="'+H+'" stroke-width="2.5"/>'+
+  /* handle + lever swing forward around the machine's top pivot (96,26) */
+  '<g class="mv" style="transform-origin:96px 26px">'+
   '<circle cx="67" cy="45" r="4" stroke="'+D+'" stroke-width="2.5"/>'+
   '<path d="M71,45 H96 V26" stroke="'+D+'" stroke-width="2.5"/>'+
-  '<path d="M74,58 H96" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
+  '</g>'+
+  '<path d="M74,58 H96" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>', "anim"),
 
 shoulderPress: svg(base+stack+
   '<path d="M100,90 V22" stroke="'+G+'" stroke-width="2.5"/>'+
