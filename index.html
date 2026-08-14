@@ -199,11 +199,11 @@
     .top h1{font-size:38px}
     .savebar .inner{max-width:528px}
   }
-  /* 器械圖動態示意（先掛在 .anim 的圖上）：箭頭沿出力方向反覆描繪、會動的部位繞支點來回擺 */
-  .mach.anim path[marker-end]{stroke-dasharray:80;animation:machdraw 2s ease-in-out infinite}
+  /* 器械圖動態示意：箭頭沿出力方向反覆描繪；掛 .mv 的部件沿箭頭方向平移（--mx/--my），
+     出力 → 短暫停 → 收回，兩者同一個 2s 節奏 */
+  .mach path[marker-end]{stroke-dasharray:80;animation:machdraw 2s ease-in-out infinite}
   @keyframes machdraw{0%{stroke-dashoffset:80}55%,100%{stroke-dashoffset:0}}
-  /* 會動的部位沿「箭頭方向」平移（每張圖用 --mx/--my 給方向），推出去 → 短暫停 → 收回 */
-  .mach.anim .mv{animation:machmove 2s ease-in-out infinite}
+  .mach .mv{animation:machmove 2s ease-in-out infinite}
   @keyframes machmove{0%,100%{transform:translate(0,0)}45%,62%{transform:translate(var(--mx,8px),var(--my,0px))}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}
     .mach path[marker-end]{stroke-dasharray:none}}
@@ -316,10 +316,12 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const G="#5C6675", H="#98A2B0", D="var(--day)";
 
 /* 器械示意圖：灰色是機器，藍/黃/綠是「會動的部位」與出力方向 */
-function svg(inner, cls){
-  return '<svg class="mach'+(cls?" "+cls:"")+'" viewBox="0 0 130 100" fill="none" stroke-linecap="round" '+
+function svg(inner){
+  return '<svg class="mach" viewBox="0 0 130 100" fill="none" stroke-linecap="round" '+
     'stroke-linejoin="round" aria-hidden="true">'+inner+'</svg>';
 }
+/* wrap a machine part so it slides along its arrow's direction */
+const mv = (dx,dy,inner) => '<g class="mv" style="--mx:'+dx+'px;--my:'+dy+'px">'+inner+'</g>';
 const seatedRight =  /* 側面：人朝右坐 */
   '<circle cx="40" cy="30" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M42,37 L46,62" stroke="'+H+'" stroke-width="2.5"/>'+
@@ -330,20 +332,19 @@ const stack = '<path d="M104,36 h16 v48 h-16 z M104,46 h16 M104,56 h16 M104,66 h
 const ICONS = {
 /* generic dumbbell for user-added exercises */
 _custom: svg(base+
+  mv(0,-8,
   '<path d="M40,50 H90" stroke="'+H+'" stroke-width="4"/>'+
   '<path d="M36,32 V68 M94,32 V68" stroke="'+D+'" stroke-width="8"/>'+
-  '<path d="M25,38 V62 M105,38 V62" stroke="'+D+'" stroke-width="6"/>'),
+  '<path d="M25,38 V62 M105,38 V62" stroke="'+D+'" stroke-width="6"/>')),
 chestPress: svg(base+stack+
   '<path d="M100,90 V22" stroke="'+G+'" stroke-width="2.5"/>'+
   '<path d="M44,66 H74 M44,66 L39,40" stroke="'+G+'" stroke-width="2.5"/>'+
   seatedRight+
   '<path d="M43,45 H64" stroke="'+H+'" stroke-width="2.5"/>'+
-  /* handle + lever slide forward along the arrow direction */
-  '<g class="mv" style="--mx:9px;--my:0px">'+
+  mv(9,0,
   '<circle cx="67" cy="45" r="4" stroke="'+D+'" stroke-width="2.5"/>'+
-  '<path d="M71,45 H96 V26" stroke="'+D+'" stroke-width="2.5"/>'+
-  '</g>'+
-  '<path d="M74,58 H96" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>', "anim"),
+  '<path d="M71,45 H96 V26" stroke="'+D+'" stroke-width="2.5"/>')+
+  '<path d="M74,58 H96" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
 
 shoulderPress: svg(base+stack+
   '<path d="M100,90 V22" stroke="'+G+'" stroke-width="2.5"/>'+
@@ -351,15 +352,17 @@ shoulderPress: svg(base+stack+
   '<circle cx="42" cy="30" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M44,37 L48,62 M48,62 H72 M72,62 V82" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M46,42 L56,22" stroke="'+H+'" stroke-width="2.5"/>'+
+  mv(0,-8,
   '<circle cx="58" cy="19" r="4" stroke="'+D+'" stroke-width="2.5"/>'+
-  '<path d="M62,19 H96 V32" stroke="'+D+'" stroke-width="2.5"/>'+
+  '<path d="M62,19 H96 V32" stroke="'+D+'" stroke-width="2.5"/>')+
   '<path d="M76,44 V24" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
 
 pecDeck: svg( /* 上視圖：手往身體前方夾 */
   '<circle cx="65" cy="26" r="8" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M65,34 V60 M48,62 H82" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M58,40 L32,46 M72,40 L98,46" stroke="'+H+'" stroke-width="2.5"/>'+
-  '<path d="M24,36 v22 M106,36 v22" stroke="'+G+'" stroke-width="3"/>'+
+  mv(8,2,'<path d="M24,36 v22" stroke="'+G+'" stroke-width="3"/>')+
+  mv(-8,2,'<path d="M106,36 v22" stroke="'+G+'" stroke-width="3"/>')+
   '<path d="M28,74 Q46,86 60,80" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'+
   '<path d="M102,74 Q84,86 70,80" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
 
@@ -367,7 +370,7 @@ pushdown: svg(base+stack+
   '<path d="M98,90 V20" stroke="'+G+'" stroke-width="2.5"/>'+
   '<circle cx="98" cy="16" r="5" stroke="'+G+'" stroke-width="2.5"/>'+
   '<path d="M98,21 V42" stroke="'+D+'" stroke-width="2"/>'+
-  '<path d="M84,42 H112" stroke="'+D+'" stroke-width="4"/>'+
+  mv(0,9,'<path d="M84,42 H112" stroke="'+D+'" stroke-width="4"/>')+
   '<circle cx="52" cy="26" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M52,32 V62 M52,62 L44,88 M52,62 L60,88" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M54,38 L84,42" stroke="'+H+'" stroke-width="2.5"/>'+
@@ -377,7 +380,7 @@ latPulldown: svg(base+stack+
   '<path d="M100,90 V18" stroke="'+G+'" stroke-width="2.5"/>'+
   '<circle cx="100" cy="14" r="5" stroke="'+G+'" stroke-width="2.5"/>'+
   '<path d="M96,16 L60,24" stroke="'+D+'" stroke-width="2"/>'+
-  '<path d="M38,24 H80" stroke="'+D+'" stroke-width="4"/>'+
+  mv(0,8,'<path d="M38,24 H80" stroke="'+D+'" stroke-width="4"/>')+
   '<path d="M42,66 H70 M46,54 H68" stroke="'+G+'" stroke-width="2.5"/>'+
   '<circle cx="42" cy="38" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M44,45 L46,64 M46,64 H70 M70,64 V82" stroke="'+H+'" stroke-width="2.5"/>'+
@@ -390,7 +393,7 @@ seatedRow: svg(base+stack+
   '<path d="M80,34 V54" stroke="'+G+'" stroke-width="4"/>'+
   seatedRight+
   '<path d="M43,45 H60" stroke="'+H+'" stroke-width="2.5"/>'+
-  '<circle cx="63" cy="45" r="4" stroke="'+D+'" stroke-width="2.5"/>'+
+  mv(-8,0,'<circle cx="63" cy="45" r="4" stroke="'+D+'" stroke-width="2.5"/>')+
   '<path d="M67,45 H96" stroke="'+D+'" stroke-width="2"/>'+
   '<path d="M62,58 H36" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
 
@@ -399,8 +402,8 @@ reversePec: svg( /* 上視圖：胸貼墊，手往後張開 */
   '<circle cx="65" cy="32" r="8" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M65,40 V62 M50,64 H80" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M60,44 L40,54 M70,44 L90,54" stroke="'+H+'" stroke-width="2.5"/>'+
-  '<circle cx="36" cy="56" r="4" stroke="'+G+'" stroke-width="2.5"/>'+
-  '<circle cx="94" cy="56" r="4" stroke="'+G+'" stroke-width="2.5"/>'+
+  mv(-6,5,'<circle cx="36" cy="56" r="4" stroke="'+G+'" stroke-width="2.5"/>')+
+  mv(6,5,'<circle cx="94" cy="56" r="4" stroke="'+G+'" stroke-width="2.5"/>')+
   '<path d="M30,66 L14,78" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'+
   '<path d="M100,66 L116,78" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
 
@@ -412,7 +415,7 @@ bicepsCurl: svg(base+
   '<circle cx="36" cy="34" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M38,41 L42,66 M42,66 H66 M66,66 V84" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M40,46 L76,38" stroke="'+H+'" stroke-width="2.5"/>'+
-  '<circle cx="80" cy="37" r="4" stroke="'+D+'" stroke-width="2.5"/>'+
+  mv(-4,-8,'<circle cx="80" cy="37" r="4" stroke="'+D+'" stroke-width="2.5"/>')+
   '<path d="M90,44 A16,16 0 0 1 78,22" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
 
 legPress: svg(base+
@@ -420,7 +423,7 @@ legPress: svg(base+
   '<path d="M16,78 L40,62" stroke="'+G+'" stroke-width="4"/>'+
   '<circle cx="14" cy="66" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M20,68 L44,58 M44,58 L72,44 M72,44 L86,40" stroke="'+H+'" stroke-width="2.5"/>'+
-  '<path d="M84,50 L100,22" stroke="'+D+'" stroke-width="4"/>'+
+  mv(7,-4,'<path d="M84,50 L100,22" stroke="'+D+'" stroke-width="4"/>')+
   '<path d="M62,70 L88,56" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
 
 legCurl: svg(base+stack+
@@ -429,14 +432,15 @@ legCurl: svg(base+stack+
   '<circle cx="34" cy="32" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M36,39 L40,62 M40,62 H70" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M70,62 L84,78" stroke="'+H+'" stroke-width="2.5"/>'+
-  '<circle cx="87" cy="80" r="5" stroke="'+D+'" stroke-width="2.5"/>'+
+  mv(-8,1,'<circle cx="87" cy="80" r="5" stroke="'+D+'" stroke-width="2.5"/>')+
   '<path d="M96,86 Q78,94 62,88" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
 
 hipAbduction: svg( /* 正面：兩腿往外推 */
   '<circle cx="65" cy="22" r="8" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M65,30 V54 M46,56 H84" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M60,56 L44,84 M70,56 L86,84" stroke="'+H+'" stroke-width="2.5"/>'+
-  '<path d="M38,60 V84 M92,60 V84" stroke="'+G+'" stroke-width="4"/>'+
+  mv(-7,0,'<path d="M38,60 V84" stroke="'+G+'" stroke-width="4"/>')+
+  mv(7,0,'<path d="M92,60 V84" stroke="'+G+'" stroke-width="4"/>')+
   '<path d="M32,72 H14" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'+
   '<path d="M98,72 H116" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>'),
 
@@ -445,7 +449,7 @@ abCrunch: svg(base+stack+
   '<path d="M42,68 H72" stroke="'+G+'" stroke-width="2.5"/>'+
   '<circle cx="44" cy="30" r="6" stroke="'+H+'" stroke-width="2.5"/>'+
   '<path d="M46,37 Q54,52 50,66 M50,66 H74 M74,66 V84" stroke="'+H+'" stroke-width="2.5"/>'+
-  '<path d="M36,42 H64" stroke="'+D+'" stroke-width="4"/>'+
+  mv(3,7,'<path d="M36,42 H64" stroke="'+D+'" stroke-width="4"/>')+
   '<path d="M74,32 A20,20 0 0 1 80,58" stroke="'+D+'" stroke-width="2.5" marker-end="url(#ar)"/>')
 };
 
