@@ -112,6 +112,8 @@
        border-radius:14px;font-size:13px;color:var(--warn);line-height:1.5;white-space:pre-wrap;font-weight:600}
   .hist-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
   .hist-head h2{margin:0}
+  .sharebtn{background:transparent;color:var(--day);border:2px solid var(--day);border-radius:12px;
+    padding:6px 12px;font-size:13px;font-weight:800;cursor:pointer}
   .syncstat{font-family:var(--mono);font-size:11px;color:var(--dimmer);margin-left:auto;text-align:right}
   .syncstat.busy{color:var(--day)}
   .syncstat.ok{color:var(--up)}
@@ -218,6 +220,7 @@
     <div class="hist">
       <div class="hist-head">
         <h2>冒險紀錄</h2>
+        <button class="sharebtn" id="share">🔥 分享戰績</button>
         <span class="syncstat" id="syncstat"></span>
       </div>
       <div id="hist"></div>
@@ -532,6 +535,7 @@ async function loadWeek(){
   const { data, error } = await sb.from("workout_logs").select("log_date").gte("log_date", ms).limit(500);
   if(error) return;
   const n = new Set((data||[]).map(r=>r.log_date)).size;
+  weekCount = n;
   $("weekstat").textContent = "本週道館 "+n+" / 3";
   $("weekdots").innerHTML = [0,1,2].map(i=>'<i class="'+(i<n?"f":"")+'"></i>').join("");
 }
@@ -656,7 +660,62 @@ async function saveSession(date){
   loadWeek();
 }
 
+/* ---------- 分享戰績：把最近一次訓練變成一段超燃文字 ---------- */
+let weekCount = 0;
+const QUOTES = [
+  "你今天流的汗，是明天的底氣。",
+  "重量不會騙人，練過的每一組都算數。",
+  "比昨天的自己多推 2.5kg，就是勝利。",
+  "肌肉是熬出來的，強者是練出來的。",
+  "沒有奇蹟，只有累積。",
+  "今天不想練？練完你就不這麼想了。",
+];
+
+function buildShareText(){
+  const s = lastSession();
+  if(!s) return null;
+  const d = DAYS[day];
+  const list = exList(day);
+  const prev = state[day].length > 1 ? state[day][state[day].length-2] : null;
+  const lines = list.map((e,i)=>{
+    const b = bestOf(s.data[i]);
+    if(!b) return null;
+    const pb = prev ? bestOf(prev.data[i]) : null;
+    let tag = "";
+    if(pb){
+      const diff = parseFloat(b.w) - parseFloat(pb.w);
+      tag = diff>0 ? "（進化了！+"+(+diff.toFixed(1))+"kg 🔺）" : diff===0 ? "（穩住 💪）" : "";
+    } else tag = "（首次解鎖 ✨）";
+    return "⚡ "+e.zh+" "+b.w+"kg × "+(b.r||"?")+" "+tag;
+  }).filter(Boolean);
+  if(!lines.length) return null;
+  const quote = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  return [
+    d.mo+" "+s.date+"　"+d.name+"日（"+d.en+" DAY）制霸！",
+    "",
+    ...lines,
+    // weekCount is 0 until loadWeek() succeeds — drop the line rather than share a wrong 0/3
+    ...(weekCount ? ["", "🏆 本週道館 "+weekCount+" / 3"] : []),
+    "",
+    "「"+quote+"」",
+    "",
+    "#PPL訓練家之路 💪",
+  ].join("\n");
+}
+
+$("share").onclick = async ()=>{
+  const text = buildShareText();
+  if(!text){ toast("這個分項還沒有紀錄，先練一場再來分享！"); return; }
+  if(navigator.share){
+    try{ await navigator.share({text}); }catch(e){ /* user cancelled the sheet */ }
+    return;
+  }
+  try{ await navigator.clipboard.writeText(text); toast("戰績已複製，去貼給朋友吧 🔥"); }
+  catch(e){ showBanner(text); }  // ponytail: last-ditch fallback, let the user copy by hand
+};
+
 $("save").onclick = ()=> saveSession($("date").value || todayStr());
+
 $("clear").onclick = ()=>{
   $("list").querySelectorAll("input").forEach(i=>{ if(i.dataset.f==="w") i.value=""; });
   exList(day).forEach((_,i)=>updateDelta(i));
