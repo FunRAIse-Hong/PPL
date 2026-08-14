@@ -1,3 +1,5 @@
+.DS_Store
+
 # Claude Code / impeccable — per-machine or transient artifacts
 .claude/
 .impeccable/hook.cache.json
