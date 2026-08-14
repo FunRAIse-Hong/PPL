@@ -1,2 +1,7 @@
-.DS_Store
+# Claude Code / impeccable — per-machine or transient artifacts
+.claude/
+.impeccable/hook.cache.json
+.impeccable/questions/
+.impeccable/review/
+.impeccable/mocks/
 .playwright-mcp/

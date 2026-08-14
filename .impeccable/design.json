@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-14T00:00:00Z",
+  "title": "Design System: PPL 訓練記錄",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "深井黑 Pit Black",
+        "canonical": "#0A0B0D",
+        "tonalRamp": ["oklch(15% 0.005 260)", "oklch(26% 0.005 260)", "oklch(37% 0.005 260)", "oklch(48% 0.005 260)", "oklch(59% 0.005 260)", "oklch(70% 0.005 260)", "oklch(81% 0.005 260)", "oklch(92% 0.005 260)"]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "面板灰 Panel Grey",
+        "canonical": "#15171B",
+        "tonalRamp": ["oklch(15% 0.008 260)", "oklch(26% 0.008 260)", "oklch(37% 0.008 260)", "oklch(48% 0.008 260)", "oklch(59% 0.008 260)", "oklch(70% 0.008 260)", "oklch(81% 0.008 260)", "oklch(92% 0.008 260)"]
+      },
+      "panel-2": {
+        "role": "neutral",
+        "displayName": "凹陷灰 Recessed Grey",
+        "canonical": "#0F1114",
+        "tonalRamp": ["oklch(15% 0.006 260)", "oklch(26% 0.006 260)", "oklch(37% 0.006 260)", "oklch(48% 0.006 260)", "oklch(59% 0.006 260)", "oklch(70% 0.006 260)", "oklch(81% 0.006 260)", "oklch(92% 0.006 260)"]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "髮絲線 Hairline",
+        "canonical": "#24272C",
+        "tonalRamp": ["oklch(15% 0.007 262)", "oklch(26% 0.007 262)", "oklch(37% 0.007 262)", "oklch(48% 0.007 262)", "oklch(59% 0.007 262)", "oklch(70% 0.007 262)", "oklch(81% 0.007 262)", "oklch(92% 0.007 262)"]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "主文字 Primary Text",
+        "canonical": "#F2F3F5",
+        "tonalRamp": ["oklch(15% 0.004 262)", "oklch(26% 0.004 262)", "oklch(37% 0.004 262)", "oklch(48% 0.004 262)", "oklch(59% 0.004 262)", "oklch(70% 0.004 262)", "oklch(81% 0.004 262)", "oklch(95% 0.004 262)"]
+      },
+      "dim": {
+        "role": "neutral",
+        "displayName": "次文字 Dim",
+        "canonical": "#9BA1A8",
+        "tonalRamp": ["oklch(15% 0.010 255)", "oklch(26% 0.010 255)", "oklch(37% 0.010 255)", "oklch(48% 0.010 255)", "oklch(59% 0.010 255)", "oklch(70% 0.010 255)", "oklch(81% 0.010 255)", "oklch(92% 0.010 255)"]
+      },
+      "dimmer": {
+        "role": "neutral",
+        "displayName": "三階文字 Dimmer",
+        "canonical": "#868C94",
+        "tonalRamp": ["oklch(15% 0.011 255)", "oklch(26% 0.011 255)", "oklch(37% 0.011 255)", "oklch(48% 0.011 255)", "oklch(59% 0.011 255)", "oklch(70% 0.011 255)", "oklch(81% 0.011 255)", "oklch(92% 0.011 255)"]
+      },
+      "on-accent": {
+        "role": "neutral",
+        "displayName": "反白字 On-Accent",
+        "canonical": "#0B0D06",
+        "tonalRamp": ["oklch(15% 0.014 110)", "oklch(26% 0.014 110)", "oklch(37% 0.014 110)", "oklch(48% 0.014 110)", "oklch(59% 0.014 110)", "oklch(70% 0.014 110)", "oklch(81% 0.014 110)", "oklch(92% 0.014 110)"]
+      },
+      "dayA-fire": {
+        "role": "primary",
+        "displayName": "火橘 Fire Orange",
+        "canonical": "#FF8A3D",
+        "tonalRamp": ["oklch(15% 0.16 52)", "oklch(26% 0.16 52)", "oklch(37% 0.16 52)", "oklch(48% 0.16 52)", "oklch(59% 0.16 52)", "oklch(70% 0.16 52)", "oklch(81% 0.16 52)", "oklch(92% 0.16 52)"]
+      },
+      "dayB-water": {
+        "role": "primary",
+        "displayName": "水藍 Water Blue",
+        "canonical": "#5C9EFF",
+        "tonalRamp": ["oklch(15% 0.14 258)", "oklch(26% 0.14 258)", "oklch(37% 0.14 258)", "oklch(48% 0.14 258)", "oklch(59% 0.14 258)", "oklch(70% 0.14 258)", "oklch(81% 0.14 258)", "oklch(92% 0.14 258)"]
+      },
+      "dayC-grass": {
+        "role": "primary",
+        "displayName": "草綠 Grass Green",
+        "canonical": "#82D94F",
+        "tonalRamp": ["oklch(15% 0.19 135)", "oklch(26% 0.19 135)", "oklch(37% 0.19 135)", "oklch(48% 0.19 135)", "oklch(59% 0.19 135)", "oklch(70% 0.19 135)", "oklch(81% 0.19 135)", "oklch(92% 0.19 135)"]
+      },
+      "up": {
+        "role": "secondary",
+        "displayName": "達標綠 Verdict Green",
+        "canonical": "#30D158",
+        "tonalRamp": ["oklch(15% 0.20 145)", "oklch(26% 0.20 145)", "oklch(37% 0.20 145)", "oklch(48% 0.20 145)", "oklch(59% 0.20 145)", "oklch(70% 0.20 145)", "oklch(81% 0.20 145)", "oklch(92% 0.20 145)"]
+      },
+      "down": {
+        "role": "secondary",
+        "displayName": "退步紅 Verdict Red",
+        "canonical": "#FF6961",
+        "tonalRamp": ["oklch(15% 0.17 22)", "oklch(26% 0.17 22)", "oklch(37% 0.17 22)", "oklch(48% 0.17 22)", "oklch(59% 0.17 22)", "oklch(70% 0.17 22)", "oklch(81% 0.17 22)", "oklch(92% 0.17 22)"]
+      },
+      "warn": {
+        "role": "secondary",
+        "displayName": "警示黃 Caution Yellow",
+        "canonical": "#FFD60A",
+        "tonalRamp": ["oklch(15% 0.18 96)", "oklch(26% 0.18 96)", "oklch(37% 0.18 96)", "oklch(48% 0.18 96)", "oklch(59% 0.18 96)", "oklch(70% 0.18 96)", "oklch(81% 0.18 96)", "oklch(92% 0.18 96)"]
+      },
+      "warn-line": {
+        "role": "secondary",
+        "displayName": "警示框線 Caution Line",
+        "canonical": "#5C511A",
+        "tonalRamp": ["oklch(15% 0.09 96)", "oklch(26% 0.09 96)", "oklch(37% 0.09 96)", "oklch(48% 0.09 96)", "oklch(59% 0.09 96)", "oklch(70% 0.09 96)", "oklch(81% 0.09 96)", "oklch(92% 0.09 96)"]
+      },
+      "warn-bg": {
+        "role": "secondary",
+        "displayName": "警示底 Caution Ground",
+        "canonical": "#1F1C0E",
+        "tonalRamp": ["oklch(15% 0.04 96)", "oklch(26% 0.04 96)", "oklch(37% 0.04 96)", "oklch(48% 0.04 96)", "oklch(59% 0.04 96)", "oklch(70% 0.04 96)", "oklch(81% 0.04 96)", "oklch(92% 0.04 96)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "頁面主標「今天的目標」。≥768px 放大到 38px，≤360px 縮到 28px。" },
+      "metric": { "displayName": "Metric", "purpose": "動作卡上的目標公斤數——全 App 最大的字，等寬 tabular，染當日分項色。" },
+      "title": { "displayName": "Title", "purpose": "動作中文名；英文名以 mono 10.5px / 0.04em 墊在下方。" },
+      "body": { "displayName": "Body", "purpose": "全域基準；卡內說明降到 12.5–13.5px 次文字色。" },
+      "input": { "displayName": "Input", "purpose": "重量與次數輸入值，等寬 tabular，讓上下兩組數字對齊。" },
+      "label": { "displayName": "Label", "purpose": "mono 微標籤：品牌列 0.14em、欄位表頭 10px/0.16em、替代動作摺疊標題 0.12em、同步狀態。" }
+    },
+    "shadows": [
+      { "name": "card-rest", "value": "0 1px 8px rgba(0,0,0,.35)", "purpose": "目標清單卡與動作卡的靜態陰影；讓卡緣不糊進地色。" },
+      { "name": "segment-raise", "value": "0 1px 2px rgba(0,0,0,.5)", "purpose": "段控制器被選中那一格的抬起感。" },
+      { "name": "action-lift", "value": "0 2px 10px rgba(0,0,0,.4)", "purpose": "底部固定儲存鍵。" },
+      { "name": "float-fab", "value": "0 4px 14px rgba(0,0,0,.45)", "purpose": "右下休息倒數膠囊。" },
+      { "name": "float-toast", "value": "0 4px 16px rgba(0,0,0,.5)", "purpose": "Toast，唯二真正離開頁面平面的元件之一。" }
+    ],
+    "motion": [
+      { "name": "ease-authored", "value": "cubic-bezier(.19,1,.22,1)", "purpose": "唯一被作者化的動作瞬間：達標 pop（0.35s，scale .6→1.15→1）與「進化了！」rise（0.4s，位移＋淡入）。狀態圈的底色／邊框過渡（0.25s）也用它。" },
+      { "name": "duration-state", "value": "0.15s", "purpose": "段控制器與儲存鍵的樸素狀態過渡（background / color / filter）。" },
+      { "name": "duration-transient", "value": "0.2s", "purpose": "Toast 淡入與位移、替代動作箭頭旋轉。" },
+      { "name": "reduced-motion", "value": "@media (prefers-reduced-motion:reduce){*{transition:none!important}}", "purpose": "全域關閉過渡。" }
+    ],
+    "breakpoints": [
+      { "name": "narrow", "value": "360px" },
+      { "name": "wide", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Save Button",
+      "kind": "button",
+      "refersTo": "button-save",
+      "description": "底部固定儲存列的主要動作，分項色實心底＋近黑字。",
+      "html": "<button class=\"ds-btn-save\">完成訓練</button>",
+      "css": ".ds-btn-save{background:var(--day,#FF8A3D);color:var(--on-accent,#0B0D06);border:none;border-radius:14px;padding:17px 32px;font-size:17px;font-weight:800;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',sans-serif;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.4);transition:filter .15s}.ds-btn-save:hover{filter:brightness(1.05)}.ds-btn-save:active{filter:brightness(.9)}.ds-btn-save:focus-visible{outline:2px solid var(--day,#FF8A3D);outline-offset:2px}.ds-btn-save:disabled{opacity:.6;cursor:default}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "次要動作（清空）：面板底、hairline 邊、次文字色，字級低於主鍵。",
+      "html": "<button class=\"ds-btn-ghost\">清空</button>",
+      "css": ".ds-btn-ghost{background:#15171B;color:#9BA1A8;border:1px solid #24272C;border-radius:14px;padding:17px 24px;font-size:14px;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',sans-serif;cursor:pointer;transition:background .15s,color .15s}.ds-btn-ghost:hover{background:#1B1E23;color:#F2F3F5}.ds-btn-ghost:focus-visible{outline:2px solid var(--day,#FF8A3D);outline-offset:2px}"
+    },
+    {
+      "name": "Day Segmented Control",
+      "kind": "nav",
+      "refersTo": "segmented-tab",
+      "description": "三分項切換。被選中那格換凹陷灰底＋抬起陰影，分項色只染文字、不染底。",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button class=\"ds-tab\" role=\"tab\" style=\"--c:#FF8A3D\" aria-selected=\"true\">🔥 推 A</button><button class=\"ds-tab\" role=\"tab\" style=\"--c:#5C9EFF\" aria-selected=\"false\">💧 拉 B</button><button class=\"ds-tab\" role=\"tab\" style=\"--c:#82D94F\" aria-selected=\"false\">🌿 腿 C</button></div>",
+      "css": ".ds-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;background:#15171B;border-radius:12px;padding:3px;max-width:420px}.ds-tab{border:none;background:transparent;border-radius:9px;padding:10px 0;font-size:15px;font-weight:700;color:#9BA1A8;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',sans-serif;cursor:pointer;transition:background .15s,color .15s}.ds-tab[aria-selected=\"true\"]{color:var(--c);background:#0F1114;font-weight:800;box-shadow:0 1px 2px rgba(0,0,0,.5)}.ds-tab:not([aria-selected=\"true\"]):hover{background:rgba(242,243,245,.05)}.ds-tab:focus-visible{outline:2px solid var(--c);outline-offset:2px}"
+    },
+    {
+      "name": "Goal List",
+      "kind": "custom",
+      "refersTo": "goal-row",
+      "description": "首屏的今天目標清單：狀態圈 × 動作名 × 目標公斤。達標列填綠勾並把文字褪成次階。",
+      "html": "<div class=\"ds-goals\"><button class=\"ds-grow\"><span class=\"ds-gmark\" aria-hidden=\"true\">✓</span><span class=\"ds-gname\">胸推機</span><span class=\"ds-gtarget\">42.5<small>kg</small></span></button><button class=\"ds-grow ds-hit\"><span class=\"ds-gmark\" aria-hidden=\"true\">✓</span><span class=\"ds-gname\">肩推機</span><span class=\"ds-gtarget\">27.5<small>kg</small></span></button><button class=\"ds-grow\"><span class=\"ds-gmark\" aria-hidden=\"true\">✓</span><span class=\"ds-gname\">蝴蝶機夾胸</span><span class=\"ds-gtarget\">35<small>kg</small></span></button></div>",
+      "css": ".ds-goals{background:#15171B;border-radius:16px;padding:4px 0;box-shadow:0 1px 8px rgba(0,0,0,.35);max-width:420px}.ds-grow{display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;background:none;border:none;border-bottom:1px solid #24272C;color:#F2F3F5;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',sans-serif;font-size:15px;cursor:pointer;text-align:left}.ds-grow:last-child{border-bottom:none}.ds-grow:hover{background:rgba(242,243,245,.05)}.ds-grow:active{background:rgba(242,243,245,.08)}.ds-grow:focus-visible{outline:2px solid var(--day,#FF8A3D);outline-offset:-2px}.ds-gmark{flex:0 0 22px;width:22px;height:22px;border-radius:50%;border:2px solid #868C94;display:grid;place-items:center;font-size:12px;color:transparent;transition:background .25s cubic-bezier(.19,1,.22,1),border-color .25s cubic-bezier(.19,1,.22,1)}.ds-hit .ds-gmark{background:#30D158;border-color:#30D158;color:#04220E;animation:ds-pop .35s cubic-bezier(.19,1,.22,1)}@keyframes ds-pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}.ds-gname{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .25s}.ds-gtarget{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:15px;font-weight:700;color:var(--day,#FF8A3D);font-variant-numeric:tabular-nums;transition:color .25s}.ds-gtarget small{font-size:11px;color:#868C94;font-weight:600;margin-left:2px}.ds-hit .ds-gname,.ds-hit .ds-gtarget{color:#9BA1A8}"
+    },
+    {
+      "name": "Weight Input",
+      "kind": "input",
+      "refersTo": "input-weight",
+      "description": "54px 高的凹陷輸入框，mono 20px tabular，單位貼在框內右側，placeholder 顯示上次重量。",
+      "html": "<div class=\"ds-field\"><input class=\"ds-input\" type=\"number\" inputmode=\"decimal\" step=\"0.5\" min=\"0\" placeholder=\"40\" value=\"42.5\" aria-label=\"重量\"><span class=\"ds-unit\">kg</span></div>",
+      "css": ".ds-field{position:relative;max-width:180px}.ds-input{width:100%;background:#0F1114;border:1px solid #24272C;border-radius:12px;height:54px;padding:0 40px 0 14px;color:#F2F3F5;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;caret-color:var(--day,#FF8A3D)}.ds-input::placeholder{color:#868C94}.ds-input:focus{border-color:var(--day,#FF8A3D)}.ds-input:focus:not(:focus-visible){outline:none}.ds-input:focus-visible{outline:2px solid var(--day,#FF8A3D);outline-offset:2px}.ds-unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11px;color:#868C94;pointer-events:none}"
+    },
+    {
+      "name": "Delta Chip",
+      "kind": "chip",
+      "refersTo": "chip-delta",
+      "description": "即時判讀「比上次多推多少」。四態：未填 / 上升 / 持平 / 下降；底色是低飽和的 color-mix，不是純色。",
+      "html": "<span class=\"ds-delta\">今天？</span> <span class=\"ds-delta ds-up\">↑ +2.5</span> <span class=\"ds-delta ds-same\">持平</span> <span class=\"ds-delta ds-down\">↓ -2.5</span>",
+      "css": ".ds-delta{display:inline-block;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',sans-serif;font-weight:700;font-size:14px;border-radius:999px;padding:4px 12px;background:#0F1114;color:#868C94;font-variant-numeric:tabular-nums}.ds-delta.ds-up{background:color-mix(in oklab,#30D158 18%,#0F1114);color:#30D158}.ds-delta.ds-down{background:color-mix(in oklab,#FF6961 14%,#0F1114);color:#FF6961}.ds-delta.ds-same{color:#9BA1A8}"
+    },
+    {
+      "name": "Exercise Card",
+      "kind": "card",
+      "refersTo": "card-exercise",
+      "description": "無邊框面板卡：器械線稿＋動作名 → 目標大數字＋delta chip → 上次最重。",
+      "html": "<div class=\"ds-ex\"><div class=\"ds-ex-h\"><svg class=\"ds-mach\" viewBox=\"0 0 130 100\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8,90 H122\" stroke=\"#5C6675\" stroke-width=\"2.5\"/><path d=\"M104,36 h16 v48 h-16 z M104,46 h16 M104,56 h16 M104,66 h16\" stroke=\"#5C6675\" stroke-width=\"2\"/><path d=\"M100,90 V22\" stroke=\"#5C6675\" stroke-width=\"2.5\"/><path d=\"M44,66 H74 M44,66 L39,40\" stroke=\"#5C6675\" stroke-width=\"2.5\"/><circle cx=\"40\" cy=\"30\" r=\"6\" stroke=\"#98A2B0\" stroke-width=\"2.5\"/><path d=\"M42,37 L46,62\" stroke=\"#98A2B0\" stroke-width=\"2.5\"/><path d=\"M46,62 H70 M70,62 V82\" stroke=\"#98A2B0\" stroke-width=\"2.5\"/><path d=\"M43,45 H64\" stroke=\"#98A2B0\" stroke-width=\"2.5\"/><circle cx=\"67\" cy=\"45\" r=\"4\" stroke=\"var(--day,#FF8A3D)\" stroke-width=\"2.5\"/><path d=\"M71,45 H96 V26\" stroke=\"var(--day,#FF8A3D)\" stroke-width=\"2.5\"/><path d=\"M74,58 H96\" stroke=\"var(--day,#FF8A3D)\" stroke-width=\"2.5\"/></svg><div class=\"ds-ex-t\"><div class=\"ds-ex-top\"><div><div class=\"ds-ex-zh\">胸推機</div><div class=\"ds-ex-en\">Chest Press</div></div><div class=\"ds-ex-target\">3 × 10–12</div></div></div></div><div class=\"ds-big\"><span class=\"ds-glabel\">目標</span><span class=\"ds-w\">42.5<small>kg</small></span><span class=\"ds-delta\">今天？</span></div><div class=\"ds-sub\">上次最重 40 kg × 10</div><div style=\"height:16px\"></div></div>",
+      "css": ".ds-ex{background:#15171B;border-radius:16px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.35);max-width:420px;color:#F2F3F5;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',sans-serif}.ds-ex-h{display:flex;gap:12px;padding:16px 16px 0;align-items:flex-start}.ds-mach{width:88px;height:68px;flex:0 0 88px;background:#0F1114;border-radius:12px}.ds-ex-t{flex:1;min-width:0}.ds-ex-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.ds-ex-zh{font-weight:700;font-size:17px;letter-spacing:-.01em}.ds-ex-en{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:10.5px;color:#868C94;letter-spacing:.04em;margin-top:2px}.ds-ex-target{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11px;color:#9BA1A8;white-space:nowrap}.ds-big{display:flex;align-items:baseline;gap:10px;padding:14px 16px 0}.ds-glabel{font-size:12px;font-weight:700;color:#9BA1A8}.ds-w{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--day,#FF8A3D);font-variant-numeric:tabular-nums}.ds-w small{font-size:14px;color:#9BA1A8;font-weight:600;margin-left:2px}.ds-big .ds-delta{margin-left:auto}.ds-sub{font-size:12.5px;color:#9BA1A8;padding:5px 16px 0;font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Progress Sparkline",
+      "kind": "custom",
+      "refersTo": "card-exercise",
+      "description": "最近 10 次的最重組趨勢。preserveAspectRatio=none 讓線撐滿卡片，non-scaling-stroke 讓線寬與點徑不變形，端點數值用 HTML 標籤疊在右側。",
+      "html": "<div class=\"ds-sparkrow\"><svg class=\"ds-spark\" viewBox=\"0 0 280 56\" preserveAspectRatio=\"none\" role=\"img\" aria-label=\"胸推機 重量趨勢，最近 5 次\"><path d=\"M6.0,46.0 L74.5,36.8 L143.0,28.0 L211.5,17.2 L274.0,10.0\" stroke=\"var(--day,#FF8A3D)\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M6.0,46.0 h0.01\" stroke=\"var(--day,#FF8A3D)\" stroke-width=\"6\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\" fill=\"none\"><title>2026-07-17　35 kg</title></path><path d=\"M74.5,36.8 h0.01\" stroke=\"var(--day,#FF8A3D)\" stroke-width=\"6\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\" fill=\"none\"><title>2026-07-24　37.5 kg</title></path><path d=\"M143.0,28.0 h0.01\" stroke=\"var(--day,#FF8A3D)\" stroke-width=\"6\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\" fill=\"none\"><title>2026-07-31　40 kg</title></path><path d=\"M211.5,17.2 h0.01\" stroke=\"var(--day,#FF8A3D)\" stroke-width=\"6\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\" fill=\"none\"><title>2026-08-07　42.5 kg</title></path><path d=\"M274.0,10.0 h0.01\" stroke=\"var(--day,#FF8A3D)\" stroke-width=\"6\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\" fill=\"none\"><title>2026-08-14　45 kg</title></path></svg><span class=\"ds-sparklabel\" style=\"top:3px\">45kg</span></div>",
+      "css": ".ds-sparkrow{position:relative;height:52px;padding-right:46px;max-width:420px;background:#15171B;padding-left:16px;padding-top:6px}.ds-spark{display:block;width:100%;height:100%}.ds-sparklabel{position:absolute;right:0;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;color:#9BA1A8;font-variant-numeric:tabular-nums;line-height:1}"
+    },
+    {
+      "name": "Rest Timer",
+      "kind": "custom",
+      "refersTo": "timer-fab",
+      "description": "填入重量即起跳 70 秒組間倒數；歸零換成「體力全滿，上！」並震動。右下浮動膠囊。",
+      "html": "<button class=\"ds-timer\">1:10</button> <button class=\"ds-timer ds-timer-done\">體力全滿，上！</button>",
+      "css": ".ds-timer{border:none;color:#0B0D06;border-radius:999px;padding:13px 20px;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:17px;font-weight:800;cursor:pointer;background:var(--day,#FF8A3D);box-shadow:0 4px 14px rgba(0,0,0,.45);font-variant-numeric:tabular-nums}.ds-timer:focus-visible{outline:2px solid var(--day,#FF8A3D);outline-offset:2px}.ds-timer:active{filter:brightness(.9)}"
+    },
+    {
+      "name": "Toast",
+      "kind": "custom",
+      "refersTo": "toast",
+      "description": "一次性回饋（已儲存 / 已複製 / 已清空），膠囊、面板底、hairline 邊，1.8 秒後消失。",
+      "html": "<div class=\"ds-toast\">已儲存 2026-08-14</div>",
+      "css": ".ds-toast{display:inline-block;background:#15171B;border:1px solid #24272C;color:#F2F3F5;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.5)}"
+    },
+    {
+      "name": "Caution Banner",
+      "kind": "custom",
+      "refersTo": "banner-warn",
+      "description": "需要使用者處理的持續錯誤（讀取失敗、離線補送失敗）。唯一同時有底色與框線的元件，不自動消失。",
+      "html": "<div class=\"ds-banner\">讀取失敗：Failed to fetch</div>",
+      "css": ".ds-banner{padding:12px 14px;border:1px solid #5C511A;background:#1F1C0E;border-radius:14px;font-size:13px;color:#FFD60A;line-height:1.5;white-space:pre-wrap;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',sans-serif;max-width:420px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Weight Room Instrument（重訓室儀表）",
+    "overview": "這是一支器械，不是一份儀表板。使用情境固定：中午的健身房、單手握著手機、組間 70 秒之內填完一組數字。所以整個系統只服務一件事——進門 30 秒內看到今天要超過的數字。開場不是圖表、不是週統計、不是歡迎語，是「今天的目標清單」：每個動作一列，左邊狀態圈、右邊一個用等寬數字寫死的公斤數。填進去超過了，圈變綠。這是全系統的第一原理，其他每個決定都往這條線收斂。\n\n材質是中性的近黑（#0A0B0D），面板比地色亮一階（#15171B）而不是靠邊框浮起來；分隔用 1px hairline（#24272C），不是描邊。整套介面在任何時刻只有一個彩色：當日分項色。推＝火橘、拉＝水藍、腿＝草綠，三色互斥，切分項時整支 App 的強調色一起換。綠色（#30D158）與紅色（#FF6961）不是裝飾色，是「超過／退步」的語意訊號，出現即代表數字判讀結果。\n\n工藝對標 Apple Fitness 與 Hevy：正統健身 App 的克制，不玩梗、不反諷。寶可夢御三家已降級為彩蛋——分項 emoji 🔥💧🌿、達標時的「進化了！比上次更強」、休息倒數結束的「體力全滿，上！」。這三處是全系統僅存的熱血口吻，是刻意保留的授權彩蛋，不是可以往外擴張的語氣許可。道館、收服、制霸類主文案已明確退場，不得回歸。",
+    "keyCharacteristics": [
+      "目標清單開場，數字先於圖表",
+      "一次只有一個強調色（當日分項色），彩色面積 <10%",
+      "所有度量值一律 mono + tabular-nums，欄位不會因數字寬度跳動",
+      "無邊框面板 + hairline 分隔 + 中性黑影，不用彩色光暈",
+      "任何寬度維持一列一卡，寬螢幕只是多留白",
+      "全域 color-scheme:dark，沒有淺色模式，也不打算有"
+    ],
+    "rules": [
+      { "name": "The One Colour Rule", "body": "任何一個畫面上只有一個分項色在說話。要加新的強調色之前，先問它能不能用 var(--day)；不能的話，它大概不該有顏色。", "section": "colors" },
+      { "name": "The Verdict Colour Rule", "body": "綠與紅是判讀結果，不是主題色。除了「比上次進步／退步」與其直接衍生（完成勾、進化標籤、成功／失敗訊息），任何地方都不准用它們著色。", "section": "colors" },
+      { "name": "The Recess Rule", "body": "比面板暗 = 可以填；比地色亮 = 是內容。輸入框與被選中的段控制器格都用凹陷灰，因為它們都是「你要動的地方」。", "section": "colors" },
+      { "name": "The Tabular Rule", "body": "任何會被拿來互相比較的數字——重量、次數、delta、日期、倒數、週次——一律 mono + font-variant-numeric: tabular-nums。中文敘述文字一律 sans。兩者不混用。", "section": "typography" },
+      { "name": "The No Webfont Rule", "body": "不引入任何外部字體。字重與字距是唯一的排版工具。", "section": "typography" },
+      { "name": "The Neutral Shadow Rule", "body": "陰影一律 rgba(0,0,0,·)。分項色不做光暈、不做彩色陰影、不做外框發光。", "section": "elevation" },
+      { "name": "The Tonal Separation Rule", "body": "需要分層時先調色階，不夠再加 hairline，最後才考慮陰影。卡片沒有邊框。", "section": "elevation" }
+    ],
+    "dos": [
+      "Do 讓畫面上只有一個彩色：當日分項色（var(--day)）。新元件要強調時先問能不能用它。",
+      "Do 把所有可比較的數字設成 mono + tabular-nums，中文敘述設成系統 sans。",
+      "Do 用色階分層：panel 比 bg 亮一階代表內容，panel-2 比 panel 暗一階代表可填寫。",
+      "Do 讓可互動的表面（輸入框、ghost 鍵、日期欄）有 1px hairline 描邊，純展示面板不描邊。",
+      "Do 把輸入框維持在 54px 高、主鍵維持 17px padding——這是單手現場操作的下限。",
+      "Do 用 cubic-bezier(.19,1,.22,1) 給那唯一一個被作者化的動作瞬間（達標 pop 0.35s、「進化了！」升起 0.4s）；其他狀態轉場用 0.15–0.25s 的樸素過渡。",
+      "Do 尊重 prefers-reduced-motion: reduce（全域關閉 transition）。",
+      "Do 在任何寬度維持一列一卡；寬螢幕只放寬容器（480px → 560px）與放大主標。",
+      "Do 器械線稿維持三色分工：機器 #5C6675、人體 #98A2B0、會動的部位與出力方向用分項色。",
+      "Do 更新主介面色票或字體時，同步更新戰績卡（canvas）裡的對應常數。"
+    ],
+    "donts": [
+      "Don't 把兩個分項色同時放在畫面上（段控制器也只染被選中那一格的文字）。",
+      "Don't 用綠或紅當裝飾色——它們只表示「比上次進步／退步」。",
+      "Don't 用彩色陰影或發光。陰影一律 rgba(0,0,0,·)。",
+      "Don't 給卡片加邊框，或用邊框取代色階分層。",
+      "Don't 引入外部字體、圖示字型或 CDN 樣式表。",
+      "Don't 讓圖表、統計或儀表板出現在目標清單之前——首屏必須是「今天要超過的數字」。",
+      "Don't 在多欄或並排卡片上做文章，任何寬度都不行。",
+      "Don't 把御三家梗擴張回主文案。emoji 🔥💧🌿、「進化了！比上次更強」、「體力全滿，上！」是完整清單；道館／收服／制霸類語彙不得回歸。",
+      "Don't 在被 preserveAspectRatio=\"none\" 拉伸的 SVG 裡放文字——端點數值用 HTML 疊上去。",
+      "Don't 增加淺色模式。color-scheme:dark 是這支 App 的使用情境（健身房、深色底、大字）決定的，不是主題偏好。"
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "10px",
+        "createdAt": "2026-08-14T07:04:03.641Z",
+        "reason": "shipped small-text/responsive ramp step; reviewed build (finish review: ship) is ground truth"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "11px",
+        "createdAt": "2026-08-14T07:04:03.677Z",
+        "reason": "shipped small-text/responsive ramp step; reviewed build (finish review: ship) is ground truth"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "12px",
+        "createdAt": "2026-08-14T07:04:03.710Z",
+        "reason": "shipped small-text/responsive ramp step; reviewed build (finish review: ship) is ground truth"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "13px",
+        "createdAt": "2026-08-14T07:04:03.745Z",
+        "reason": "shipped small-text/responsive ramp step; reviewed build (finish review: ship) is ground truth"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "14px",
+        "createdAt": "2026-08-14T07:04:03.778Z",
+        "reason": "shipped small-text/responsive ramp step; reviewed build (finish review: ship) is ground truth"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "15px",
+        "createdAt": "2026-08-14T07:04:03.809Z",
+        "reason": "shipped small-text/responsive ramp step; reviewed build (finish review: ship) is ground truth"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "28px",
+        "createdAt": "2026-08-14T07:04:03.840Z",
+        "reason": "shipped small-text/responsive ramp step; reviewed build (finish review: ship) is ground truth"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "38px",
+        "createdAt": "2026-08-14T07:04:03.872Z",
+        "reason": "shipped small-text/responsive ramp step; reviewed build (finish review: ship) is ground truth"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#04220e",
+        "createdAt": "2026-08-14T07:04:03.904Z",
+        "reason": "on-up check-mark text color paired with --up green; shipped and reviewed"
+      }
+    ]
+  }
+}
