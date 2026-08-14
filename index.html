@@ -202,8 +202,9 @@
   /* 器械圖動態示意（先掛在 .anim 的圖上）：箭頭沿出力方向反覆描繪、會動的部位繞支點來回擺 */
   .mach.anim path[marker-end]{stroke-dasharray:80;animation:machdraw 2s ease-in-out infinite}
   @keyframes machdraw{0%{stroke-dashoffset:80}55%,100%{stroke-dashoffset:0}}
-  .mach.anim .mv{transform-box:view-box;animation:machswing 2s ease-in-out infinite}
-  @keyframes machswing{0%,100%{transform:rotate(0)}50%{transform:rotate(-14deg)}}
+  /* 會動的部位沿「箭頭方向」平移（每張圖用 --mx/--my 給方向），推出去 → 短暫停 → 收回 */
+  .mach.anim .mv{animation:machmove 2s ease-in-out infinite}
+  @keyframes machmove{0%,100%{transform:translate(0,0)}45%,62%{transform:translate(var(--mx,8px),var(--my,0px))}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}
     .mach path[marker-end]{stroke-dasharray:none}}
   @media (max-width:360px){.mach{width:76px;flex:0 0 76px;height:60px}.top h1{font-size:28px}}
@@ -337,8 +338,8 @@ chestPress: svg(base+stack+
   '<path d="M44,66 H74 M44,66 L39,40" stroke="'+G+'" stroke-width="2.5"/>'+
   seatedRight+
   '<path d="M43,45 H64" stroke="'+H+'" stroke-width="2.5"/>'+
-  /* handle + lever swing forward around the machine's top pivot (96,26) */
-  '<g class="mv" style="transform-origin:96px 26px">'+
+  /* handle + lever slide forward along the arrow direction */
+  '<g class="mv" style="--mx:9px;--my:0px">'+
   '<circle cx="67" cy="45" r="4" stroke="'+D+'" stroke-width="2.5"/>'+
   '<path d="M71,45 H96 V26" stroke="'+D+'" stroke-width="2.5"/>'+
   '</g>'+
