@@ -671,47 +671,113 @@ const QUOTES = [
   "今天不想練？練完你就不這麼想了。",
 ];
 
-function buildShareText(){
-  const s = lastSession();
-  if(!s) return null;
-  const d = DAYS[day];
-  const list = exList(day);
-  const prev = state[day].length > 1 ? state[day][state[day].length-2] : null;
-  const lines = list.map((e,i)=>{
+/* 分享的是「訓練日期」欄選到的那天；delta 跟該天的前一次比 */
+function buildShareData(date){
+  const idx = state[day].findIndex(s=>s.date===date);
+  if(idx < 0) return null;
+  const s = state[day][idx];
+  const prev = idx > 0 ? state[day][idx-1] : null;
+  const rows = exList(day).map((e,i)=>{
     const b = bestOf(s.data[i]);
     if(!b) return null;
     const pb = prev ? bestOf(prev.data[i]) : null;
     let tag = "";
     if(pb){
       const diff = parseFloat(b.w) - parseFloat(pb.w);
-      tag = diff>0 ? "（進化了！+"+(+diff.toFixed(1))+"kg 🔺）" : diff===0 ? "（穩住 💪）" : "";
-    } else tag = "（首次解鎖 ✨）";
-    return "⚡ "+e.zh+" "+b.w+"kg × "+(b.r||"?")+" "+tag;
+      tag = diff>0 ? "進化了！+"+(+diff.toFixed(1))+"kg 🔺" : diff===0 ? "穩住 💪" : "";
+    } else tag = "首次解鎖 ✨";
+    return {zh:e.zh, w:b.w, r:b.r||"?", tag};
   }).filter(Boolean);
-  if(!lines.length) return null;
-  const quote = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  if(!rows.length) return null;
+  return {d:DAYS[day], date, rows, quote:QUOTES[Math.floor(Math.random()*QUOTES.length)]};
+}
+
+function shareText(sd){
   return [
-    d.mo+" "+s.date+"　"+d.name+"日（"+d.en+" DAY）制霸！",
+    sd.d.mo+" "+sd.date+"　"+sd.d.name+"日（"+sd.d.en+" DAY）制霸！",
     "",
-    ...lines,
+    ...sd.rows.map(r=>"⚡ "+r.zh+" "+r.w+"kg × "+r.r+(r.tag?"（"+r.tag+"）":"")),
     // weekCount is 0 until loadWeek() succeeds — drop the line rather than share a wrong 0/3
     ...(weekCount ? ["", "🏆 本週道館 "+weekCount+" / 3"] : []),
     "",
-    "「"+quote+"」",
+    "「"+sd.quote+"」",
     "",
     "#PPL訓練家之路 💪",
   ].join("\n");
 }
 
+/* 1080px 寬的戰績卡：深底、分項色光暈，高度隨動作數長高 */
+function shareImage(sd){
+  const dc = getComputedStyle(document.documentElement).getPropertyValue("--day").trim() || "#FF8A3D";
+  const W=1080, PAD=80, rowH=150, top=360;
+  const H = top + sd.rows.length*rowH + (weekCount?120:0) + 300;
+  const c = document.createElement("canvas"); c.width=W; c.height=H;
+  const x = c.getContext("2d");
+  const F = (w,s)=> w+" "+s+'px system-ui,"PingFang TC","Noto Sans TC",sans-serif';
+  const fit = (t,max,f)=>{ x.font=f; while(x.measureText(t).width>max && t.length>2) t=t.slice(0,-2)+"…"; return t; };
+
+  x.fillStyle="#101318"; x.fillRect(0,0,W,H);
+  x.globalAlpha=.22;
+  const g = x.createRadialGradient(W*.8,-100,0, W*.8,-100,900);
+  g.addColorStop(0,dc); g.addColorStop(1,"transparent");
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.globalAlpha=1;
+  x.fillStyle=dc; x.fillRect(0,0,W,14);
+
+  x.fillStyle="#98A2B0"; x.font=F(700,30);
+  x.fillText("90-DAY 訓練家之路", PAD, 106);
+  x.textAlign="right"; x.fillText(sd.date, W-PAD, 106); x.textAlign="left";
+  x.fillStyle="#FFFFFF"; x.font=F(800,84);
+  x.fillText(sd.d.mo+" "+sd.d.name+"日制霸！", PAD, 226);
+  x.fillStyle=dc; x.font=F(800,34);
+  x.fillText(sd.d.en+" DAY · "+sd.d.groups, PAD, 288);
+
+  let y = top;
+  sd.rows.forEach(r=>{
+    x.fillStyle="#2A3140"; x.fillRect(PAD, y, W-2*PAD, 2);
+    x.fillStyle="#C7CEDA"; x.font=F(600,40);
+    x.fillText(fit(r.zh, W-2*PAD, F(600,40)), PAD, y+60);
+    const v = r.w+"kg × "+r.r;
+    x.font=F(800,58); const vw = x.measureText(v).width;
+    x.fillStyle=dc; x.fillText(v, PAD, y+126);
+    if(r.tag){ x.fillStyle="#98A2B0"; x.font=F(700,32); x.fillText(r.tag, PAD+vw+28, y+118); }
+    y += rowH;
+  });
+
+  y += 40;
+  if(weekCount){
+    x.fillStyle="#FFFFFF"; x.font=F(800,44);
+    x.fillText("🏆 本週道館 "+weekCount+" / 3", PAD, y+44);
+    y += 120;
+  }
+  x.fillStyle="#E8ECF2"; x.font=F(600,42);
+  x.fillText(fit("「"+sd.quote+"」", W-2*PAD, F(600,42)), PAD, y+52);
+  x.fillStyle=dc; x.font=F(800,32);
+  x.fillText("#PPL訓練家之路 💪", PAD, y+134);
+  return c;
+}
+
 $("share").onclick = async ()=>{
-  const text = buildShareText();
-  if(!text){ toast("這個分項還沒有紀錄，先練一場再來分享！"); return; }
-  if(navigator.share){
-    try{ await navigator.share({text}); }catch(e){ /* user cancelled the sheet */ }
+  const date = $("date").value || todayStr();
+  const sd = buildShareData(date);
+  if(!sd){ toast(date+" 沒有"+DAYS[day].name+"日紀錄，先選一個練過的日期"); return; }
+
+  let copied = false;
+  try{ await navigator.clipboard.writeText(shareText(sd)); copied = true; }catch(e){}
+
+  const blob = await new Promise(res => shareImage(sd).toBlob(res, "image/png"));
+  const file = new File([blob], "ppl-"+date+".png", {type:"image/png"});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    if(copied) toast("戰績文字已複製 🔥 圖片拿去傳！");
+    try{ await navigator.share({files:[file]}); }catch(e){ /* user cancelled the sheet */ }
     return;
   }
-  try{ await navigator.clipboard.writeText(text); toast("戰績已複製，去貼給朋友吧 🔥"); }
-  catch(e){ showBanner(text); }  // ponytail: last-ditch fallback, let the user copy by hand
+  // ponytail: desktop fallback — download the card instead of a share sheet
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = file.name; a.click();
+  URL.revokeObjectURL(a.href);
+  if(copied) toast("文字已複製、圖片已下載 🔥");
+  else { toast("圖片已下載 🔥"); showBanner(shareText(sd)); }
 };
 
 $("save").onclick = ()=> saveSession($("date").value || todayStr());
