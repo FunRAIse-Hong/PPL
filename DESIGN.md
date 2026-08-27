@@ -235,7 +235,7 @@ components:
 
 首屏順序是固定的敘事：品牌列 → 主標 → 本週 x/3 點列 → 分項段控制器 → **目標清單卡** → 訓練日期 → 動作卡群。目標清單一定在動作卡之前；圖表（sparkline）永遠在動作卡內部，不上首屏。
 
-固定元素只有兩個：底部儲存列（`linear-gradient(to top, bg 70%, transparent)` 淡出，不用毛玻璃），與右下休息倒數膠囊（`bottom:112px`，浮在儲存列上方）。Toast 從 96px 升到 104px 出現。
+固定元素只有兩個：底部儲存列（`linear-gradient(to top, bg 70%, transparent)` 淡出，不用毛玻璃），與右上休息倒數膠囊（`top:max(12px, safe-area-inset-top)`，放上方是為了不被手機鍵盤蓋住）。Toast 從 96px 升到 104px 出現。
 
 分項切換有兩條路徑：段控制器點擊，以及全頁左右滑動（位移 >60px 且水平明顯大於垂直，起點避開左右各 24px 的 iOS 返回手勢區）。
 
