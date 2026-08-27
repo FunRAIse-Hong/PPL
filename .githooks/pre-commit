@@ -1,0 +1,6 @@
+#!/bin/sh
+# Stamp the on-page version with the commit time whenever index.html is staged.
+git diff --cached --quiet -- index.html && exit 0
+stamp=$(date "+%Y-%m-%d %H:%M")
+sed -i '' "s|<span id=\"ver\">[^<]*</span>|<span id=\"ver\">$stamp</span>|" index.html
+git add index.html

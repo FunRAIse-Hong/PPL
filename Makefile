@@ -1,6 +1,6 @@
 # Requires SUPABASE_SERVICE_KEY in env (Dashboard → Project Settings → API Keys → service_role)
 
-.PHONY: help link serve
+.PHONY: help link serve hooks
 
 help:
 	@echo "PPL 訓練記錄 — 指令說明"
@@ -11,6 +11,9 @@ help:
 	@echo ""
 	@echo "  make serve"
 	@echo "      本機預覽 http://localhost:8642"
+	@echo ""
+	@echo "  make hooks"
+	@echo "      啟用 .githooks（commit 時自動蓋頁尾版本時間）；clone 後跑一次"
 
 link:
 	@./magic-link.sh $(filter-out link,$(MAKECMDGOALS))
@@ -21,3 +24,6 @@ link:
 
 serve:
 	python3 -m http.server 8642
+
+hooks:
+	git config core.hooksPath .githooks
