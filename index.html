@@ -297,7 +297,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       </ul>
     </div>
     <!-- stamped by .githooks/pre-commit on every commit that touches index.html -->
-    <div class="ver">版本 <span id="ver">2026-08-27 15:51</span></div>
+    <div class="ver">版本 <span id="ver">2026-09-01 16:33</span></div>
   </div>
 
   <div class="savebar"><div class="inner">
@@ -890,7 +890,7 @@ $("clear").onclick = ()=>{
 function renderTabs(){
   $("tabs").innerHTML = Object.entries(DAYS).map(([k,d])=>
     '<button class="tab" role="tab" data-day="'+k+'" style="--c:'+d.color+'" aria-selected="'+(k===day)+'">'+
-    d.mo+' '+d.name+' '+k+'</button>').join("");
+    d.en[0]+d.en.slice(1).toLowerCase()+'</button>').join("");
   $("tabs").querySelectorAll(".tab").forEach(b=>{
     b.onclick = ()=>switchDay(b.dataset.day);
   });
