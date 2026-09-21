@@ -19,31 +19,70 @@ function grab(head){
 }
 
 let selDate = "2026-09-21";
-const ctx = { day: "A", state: { A: [] }, $: () => ({value: selDate}), todayStr: () => selDate };
+const ctx = { day: "A", state: {A: []}, $: () => ({value: selDate}), todayStr: () => selDate };
 vm.createContext(ctx);
 vm.runInContext(
-  ["function bestOf(sets)", "function lastBest(i)", "const TARGET_STEP", "const round25", "const setTargets", "const targetOf"]
+  ["const REP_GOAL", "const TARGET_STEP", "const round25", "const topTarget",
+   "const setTargets", "const targetOf", "function bestOf(sets)", "function lastBest(i)"]
     .map(grab).join("\n") +
-  ";this.bestOf=bestOf;this.lastBest=lastBest;this.setTargets=setTargets;this.targetOf=targetOf;", ctx);
+  ";this.lastBest=lastBest;this.setTargets=setTargets;this.targetOf=targetOf;this.topTarget=topTarget;", ctx);
 
-/* 0 = 蝴蝶機 (skipped on the most recent day), 1 = 划船 (done every time) */
+const sets = (...a) => a.map(([w,r]) => w == null ? null : {w:String(w), r:String(r)});
+const ramp = w => [...ctx.setTargets(w)];
+
+/* ---- 往回找：上次沒做的動作不該退回「試重量」 ---- */
+// 0 = 蝴蝶機 (skipped on the most recent day), 1 = 划船 (done every time)
 ctx.state.A = [
-  {date:"2026-09-01", data:[[{w:"20",r:"10"},{w:"22.5",r:"9"},{w:"25",r:"8"}], [{w:"40",r:"10"},null,null]]},
-  {date:"2026-09-10", data:[[null,null,null],                                  [{w:"42.5",r:"10"},null,null]]},
+  {date:"2026-09-01", data:[sets([20,10],[22.5,10],[25,10]), sets([40,10],[null],[null])]},
+  {date:"2026-09-10", data:[sets([null],[null],[null]),      sets([42.5,10],[null],[null])]},
 ];
-
-// skipping an exercise falls back to the session before last, not 試重量
-assert.strictEqual(ctx.targetOf(ctx.lastBest(0)), 27.5);
-assert.strictEqual(ctx.lastBest(0).stale, true);
 assert.strictEqual(ctx.lastBest(0).date, "2026-09-01");
-// an exercise done last time still uses last time
-assert.strictEqual(ctx.targetOf(ctx.lastBest(1)), 45);
+assert.strictEqual(ctx.lastBest(0).stale, true);
+assert.strictEqual(ctx.lastBest(1).date, "2026-09-10");
 assert.strictEqual(ctx.lastBest(1).stale, false);
 // never trained → no target, UI falls back to 試重量
 ctx.state.A = [];
 assert.strictEqual(ctx.lastBest(0), null);
-// ramp: warm-up → match last time → breakthrough, all on 2.5kg steps
-assert.deepStrictEqual([...ctx.setTargets(25)], [22.5, 25, 27.5]);
-assert.deepStrictEqual([...ctx.setTargets(65)], [57.5, 65, 67.5]);
+
+/* ---- 雙重漸進：加重要用次數換 ---- */
+const only = rows => { ctx.state.A = [{date:"2026-09-10", data:[sets(...rows)]}]; return ctx.lastBest(0); };
+
+// 三組都滿 10 下 → 賺到，頂組 +2.5
+let p = only([[22.5,10],[25,10],[27.5,10]]);
+assert.strictEqual(p.earned, true);
+assert.strictEqual(ctx.topTarget(p), 30);
+assert.deepStrictEqual(ramp(30), [25, 27.5, 30]);
+
+// 頂組只做到 8 下 → 沒賺到，頂組維持 27.5，這次把 10 下做滿
+p = only([[22.5,10],[25,10],[27.5,8]]);
+assert.strictEqual(p.earned, false);
+assert.strictEqual(ctx.topTarget(p), 27.5);
+assert.deepStrictEqual(ramp(27.5), [22.5, 25, 27.5]);
+
+// 只填兩組 → 沒做完，不算賺到
+p = only([[22.5,10],[25,10],[null]]);
+assert.strictEqual(p.earned, false);
+assert.strictEqual(ctx.topTarget(p), 25);
+
+// 超過 10 下也算賺到（12 下 ≥ 10）
+assert.strictEqual(only([[25,12],[25,12],[25,11]]).earned, true);
+// 有一組掉到 9 下就不算
+assert.strictEqual(only([[25,10],[25,9],[25,10]]).earned, false);
+// 次數沒填 → 不算賺到（NaN >= 10 為 false）
+assert.strictEqual(only([[25,""],[25,""],[25,""]]).earned, false);
+
+/* ---- ramp：三組各差一片，頂組就是目標；很輕時不會出現 0 或負數 ---- */
+assert.deepStrictEqual(ramp(52.5), [47.5, 50, 52.5]);
+assert.deepStrictEqual(ramp(5),    [2.5, 2.5, 5]);
+assert.deepStrictEqual(ramp(2.5),  [2.5, 2.5, 2.5]);
+
+/* ---- targetOf 是目標清單用的頂組數字 ---- */
+assert.strictEqual(ctx.targetOf(only([[25,10],[25,10],[25,10]])), 27.5);
+assert.strictEqual(ctx.targetOf(only([[25,10],[25,10],[25,7]])), 25);
+assert.strictEqual(ctx.targetOf(null), null);
+
+/* ---- 每個動作都是 3 × 10 ---- */
+const bad = [...src.matchAll(/target:"([^"]*)"/g)].map(m=>m[1]).filter(t => t && t !== "3 × 10");
+assert.deepStrictEqual(bad, [], "還有非 3 × 10 的動作: " + bad);
 
 console.log("ok");

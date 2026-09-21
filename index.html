@@ -299,7 +299,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       </ul>
     </div>
     <!-- stamped by .githooks/pre-commit on every commit that touches index.html -->
-    <div class="ver">版本 <span id="ver">2026-09-21 11:34</span></div>
+    <div class="ver">版本 <span id="ver">2026-09-21 11:45</span></div>
   </div>
 
   <div class="savebar"><div class="inner">
@@ -464,55 +464,55 @@ abCrunch: svg(base+stack+
 
 const DAYS = {
 A:{name:"推",en:"PUSH",st:"PUSH · FIRE",mo:"🔥",groups:"胸 · 肩 · 三頭",color:"var(--dayA)",ex:[
- {zh:"胸推機",en:"Chest Press",target:"3 × 10–12",icon:"chestPress",
+ {zh:"胸推機",en:"Chest Press",target:"3 × 10",icon:"chestPress",
   id:"<b>背貼椅背</b>坐，握把在<b>胸口兩側</b>，往正前方推出去。",
   alt:["史密斯機臥推 Smith Machine Bench Press","啞鈴臥推 Dumbbell Bench Press","伏地挺身 Push-up（手撐高降難度）"],
   why:"都是水平推 Horizontal Press：把重量往身體正前方推。"},
- {zh:"肩推機",en:"Shoulder Press",target:"3 × 10–12",icon:"shoulderPress",
+ {zh:"肩推機",en:"Shoulder Press",target:"3 × 10",icon:"shoulderPress",
   id:"握把在<b>耳朵旁或肩膀上方</b>，往頭頂正上方推。",
   alt:["啞鈴肩推 Dumbbell Shoulder Press（椅背調到接近垂直）","史密斯機肩推 Smith Machine Shoulder Press","站姿啞鈴推舉 Standing Dumbbell Press"],
   why:"都是垂直推 Vertical Press：把重量往頭頂上方推。"},
- {zh:"蝴蝶機夾胸",en:"Pec Deck",target:"3 × 12–15",icon:"pecDeck",
+ {zh:"蝴蝶機夾胸",en:"Pec Deck",target:"3 × 10",icon:"pecDeck",
   id:"<b>背貼椅背</b>坐，手臂張開放兩側墊子上，往<b>身體前方夾</b>。",
   alt:["滑輪夾胸 Cable Crossover","啞鈴飛鳥 Dumbbell Fly（躺姿，手肘微彎）"],
   why:"孤立動作 Isolation：只有胸在出力，手肘全程幾乎不彎。"},
- {zh:"三頭下壓",en:"Triceps Pushdown",target:"3 × 12–15",icon:"pushdown",
+ {zh:"三頭下壓",en:"Triceps Pushdown",target:"3 × 10",icon:"pushdown",
   id:"不是獨立機器 —— 是<b>滑輪機 Cable Machine</b>，滑輪調到<b>最高</b>掛一支短槓。",
   alt:["三頭伸展機 Triceps Extension Machine","啞鈴頸後臂屈伸 Overhead Triceps Extension","椅上反撐 Bench Dips（免器材）"],
   why:"手肘固定夾在身側不動，只有前臂在移動。"}]},
 
 B:{name:"拉",en:"PULL",st:"PULL · WATER",mo:"💧",groups:"背 · 二頭 · 後肩",color:"var(--dayB)",ex:[
- {zh:"滑輪下拉",en:"Lat Pulldown",target:"3 × 10–12",icon:"latPulldown",
+ {zh:"滑輪下拉",en:"Lat Pulldown",target:"3 × 10",icon:"latPulldown",
   id:"<b>頭頂上方有一支長橫槓</b>，大腿上方有固定墊卡住。",
   alt:["輔助引體向上機 Assisted Pull-up Machine","滑輪機換寬握把做下拉","彈力帶下拉 Band Pulldown"],
   why:"垂直拉 Vertical Pull：從頭頂上方往下拉，練背闊肌寬度。"},
- {zh:"坐姿划船",en:"Seated Row",target:"3 × 10–12",icon:"seatedRow",
+ {zh:"坐姿划船",en:"Seated Row",target:"3 × 10",icon:"seatedRow",
   id:"<b>面向機器</b>坐，胸口前有一塊靠墊，握把往肚子方向拉。",
   alt:["滑輪坐姿划船 Cable Row","啞鈴單手划船 One-arm Dumbbell Row（撐在長椅上）","T槓划船 T-Bar Row"],
   why:"水平拉 Horizontal Pull：往肚子拉，練背的厚度與姿勢。"},
- {zh:"反向蝴蝶機",en:"Reverse Pec Deck",target:"3 × 15",icon:"reversePec",
+ {zh:"反向蝴蝶機",en:"Reverse Pec Deck",target:"3 × 10",icon:"reversePec",
   id:"<b>常常就是蝴蝶機那一台</b>，差別在你要<b>面向椅背坐、胸口貼墊</b>，手往身體後方張開。",
   alt:["滑輪面拉 Face Pull（滑輪調高，拉向臉部）","俯身啞鈴飛鳥 Bent-over Rear Delt Fly（輕重量）"],
   why:"改善圓肩最直接的動作，拍照體態差別最明顯。"},
- {zh:"二頭彎舉機",en:"Biceps Curl Machine",target:"3 × 12–15",icon:"bicepsCurl",
+ {zh:"二頭彎舉機",en:"Biceps Curl Machine",target:"3 × 10",icon:"bicepsCurl",
   id:"有一塊<b>斜的手臂靠墊</b>，手肘整個擱上去不能離開。",
   alt:["啞鈴彎舉 Dumbbell Curl","滑輪彎舉 Cable Curl","EZ槓彎舉 EZ-Bar Curl"],
   why:"時間不夠時這個可以砍，下拉和划船已經練到二頭。"}]},
 
 C:{name:"腿",en:"LEGS",st:"LEGS · GRASS",mo:"🌿",groups:"腿 · 臀 · 核心",color:"var(--dayC)",ex:[
- {zh:"腿推機",en:"Leg Press",target:"3 × 10–12",icon:"legPress",
+ {zh:"腿推機",en:"Leg Press",target:"3 × 10",icon:"legPress",
   id:"<b>45度斜躺</b>，腳踩在一塊<b>大鐵板</b>上往外推。",
   alt:["哈克深蹲機 Hack Squat","史密斯機深蹲 Smith Machine Squat","高腳杯深蹲 Goblet Squat（抱一顆啞鈴蹲）"],
   why:"都是膝主導 Knee-dominant：蹲下站起的模式，練大腿前側與臀。"},
- {zh:"腿後勾",en:"Leg Curl",target:"3 × 12",icon:"legCurl",
+ {zh:"腿後勾",en:"Leg Curl",target:"3 × 10",icon:"legCurl",
   id:"<b>腳踝後方有滾筒墊</b>，用腳跟往後（或往下）勾。坐姿、趴姿都算。",
   alt:["啞鈴羅馬尼亞硬舉 Dumbbell RDL（Romanian Deadlift，直腿下放）","臀推機 Hip Thrust Machine","滑輪後踢腿 Cable Kickback"],
   why:"練大腿後側與臀，久坐族最弱、也最影響臀線的地方。"},
- {zh:"髖外展機",en:"Hip Abduction",target:"3 × 15–20",icon:"hipAbduction",
+ {zh:"髖外展機",en:"Hip Abduction",target:"3 × 10",icon:"hipAbduction",
   id:"墊子在<b>大腿外側</b>，往外推開。⚠️ 旁邊常有一台長很像的<b>髖內收 Hip Adduction</b>，墊子在大腿<b>內側</b>、往內夾，別坐錯。",
   alt:["彈力帶側走 Banded Lateral Walk","側躺抬腿 Side-lying Leg Raise","滑輪髖外展 Cable Abduction"],
   why:"練臀中肌 Gluteus Medius，臀部側邊撐起來，腰看起來更細。"},
- {zh:"機械捲腹",en:"Abdominal Crunch",target:"3 × 15",icon:"abCrunch",
+ {zh:"機械捲腹",en:"Abdominal Crunch",target:"3 × 10",icon:"abCrunch",
   id:"<b>肩膀上方有壓墊</b>或胸前有握把，身體往前捲下去。",
   alt:["棒式 Plank（30–45 秒 × 3）","懸吊抬膝 Hanging Knee Raise","墊上捲腹 Crunch"],
   why:"核心練線條與支撐力，體脂降下來才看得到，不會單獨瘦腰。"}]}
@@ -931,13 +931,17 @@ function bestOf(sets){
   return v.reduce((a,b)=> parseFloat(b.w)>parseFloat(a.w)?b:a);
 }
 /* 每個動作各自往回找最近一次有做的紀錄——上次跳過蝴蝶機，不該退回「試重量」。
-   回傳值多帶 date 與 stale（不是最近一次訓練時為 true，UI 標出是哪天的）。 */
+   多回傳 date / stale（不是最近一次訓練時為 true，UI 標出是哪天的）
+   與 earned（三組都做滿 REP_GOAL 下 = 這次加重是賺到的，見 setTargets）。 */
 function lastBest(i){
   const sel = $("date").value || todayStr();
   const before = (state[day]||[]).filter(s=>s.date<sel);
   for(let k=before.length-1; k>=0; k--){
-    const b = bestOf(before[k].data[i]);
-    if(b) return {...b, date: before[k].date, stale: k < before.length-1};
+    const sets = (before[k].data[i]||[]).filter(x=>x&&x.w);
+    if(!sets.length) continue;
+    const b = sets.reduce((x,y)=> parseFloat(y.w)>parseFloat(x.w)?y:x);
+    return {...b, date: before[k].date, stale: k < before.length-1,
+            earned: sets.length>=3 && sets.every(x=>parseFloat(x.r)>=REP_GOAL)};
   }
   return null;
 }
@@ -969,15 +973,19 @@ function sparkline(i){
     '</svg><span class="sparklabel" style="top:'+Math.round(y(last.w)/H*52-6)+'px">'+last.w+'kg</span></div>';
 }
 
-/* Ramp instead of one flat number: set 1 is a specific warm-up (~90%, RIR 4+),
-   set 2 matches last time, set 3 is the breakthrough (+step). TARGET_STEP 2.5kg
-   is ~2.5-10% at these loads, i.e. inside the usual 2-5% guidance except on the
-   lightest isolation work. ponytail: fixed step, go percentage-based if he ever
-   trains heavy enough for 2.5 to be noise. */
+/* 雙重漸進（double progression）：重量不會自己往上爬，要先把次數做滿才晉級。
+   上次三組都 REP_GOAL 下 → 頂組 +TARGET_STEP；沒做滿 → 頂組維持同重量，
+   這次的任務是把 10 下做滿。這是「無腦加重」的解法：加重要用次數換。
+   ramp：三組各差一片，頂組就是目標，所以第一組本來就輕（專項熱身）。
+   ponytail: fixed 2.5kg step — 在他 20-65kg 的負荷等於 4-12%，還在
+   ACSM 建議的 2-10% 內；真的練到很重再換成百分比。 */
+const REP_GOAL = 10;
 const TARGET_STEP = 2.5;
 const round25 = w => +(Math.round(w/2.5)*2.5).toFixed(1);
-const setTargets = w => [round25(w*0.9), +w.toFixed(1), round25(w + TARGET_STEP)];
-const targetOf = p => p ? setTargets(parseFloat(p.w))[2] : null;
+const topTarget = p => round25(parseFloat(p.w) + (p.earned ? TARGET_STEP : 0));
+const setTargets = T => [Math.max(TARGET_STEP, T-2*TARGET_STEP),
+                         Math.max(TARGET_STEP, T-TARGET_STEP), T];
+const targetOf = p => p ? topTarget(p) : null;
 
 /* 今天的目標清單 — the first thing on screen */
 function renderGoals(){
@@ -1009,14 +1017,16 @@ function render(){
 
   $("list").innerHTML = exList(day).map((e,i)=>{
     const p = lastBest(i);
-    const ramp = p ? setTargets(parseFloat(p.w)) : null;
+    const ramp = p ? setTargets(topTarget(p)) : null;
     const bigTxt = p
       ? '<div class="big"><span class="glabel">目標</span><span class="w">'+ramp[2]+'<small>kg</small></span>'+
         '<span class="delta" data-i="'+i+'">今天？</span></div>'+
-        '<div class="sub"><span>'+ramp.join(" → ")+' kg</span>　・　<span>上次最重 '+p.w+' kg × '+(p.r||"–")+
+        '<div class="sub"><span>'+ramp.join(" → ")+' kg</span>　・　<span>'+
+        (p.earned ? '上次 '+p.w+' kg 三組滿 '+REP_GOAL+' 下，晉級'
+                  : '維持 '+p.w+' kg，三組各 '+REP_GOAL+' 下就晉級')+
         (p.stale ? '（'+p.date.slice(5)+'）' : '')+'</span></div>'
       : '<div class="big"><span class="glabel">目標</span><span class="w">–<small>kg</small></span></div>'+
-        '<div class="sub">尚無紀錄，先試出一個 RIR 2 的重量</div>';
+        '<div class="sub">尚無紀錄，先試出一個做得完 '+REP_GOAL+' 下的重量</div>';
     return '<div class="ex"><div class="ex-h">'+ICONS[e.icon]+
       '<div class="ex-t"><div class="ex-top"><div><div class="ex-zh">'+esc(e.zh)+'</div>'+
       (e.en?'<div class="ex-en">'+e.en+'</div>':'')+'</div>'+
@@ -1032,7 +1042,7 @@ function render(){
         '<div class="field"><input type="number" inputmode="numeric" step="1" min="0" value="'+
           (cs&&cs.r?cs.r:"10")+'" data-ex="'+i+'" data-set="'+(n-1)+'" data-f="r"><span class="u">下</span></div>'+
         '</div>';}).join("")+'</div>'+
-      '<div class="done" data-i="'+i+'">進化了！比上次更強</div>'+
+      '<div class="done" data-i="'+i+'"></div>'+
       (e.alt.length?'<details class="alt"><summary>找不到這台？替代動作</summary><div class="alt-body"><ul>'+
       e.alt.map(a=>'<li>'+a+'</li>').join("")+'</ul><div class="why">'+e.why+'</div></div></details>':'<div class="padend"></div>')+'</div>';
   }).join("");
@@ -1044,6 +1054,10 @@ function render(){
       const filled = [...card.querySelectorAll('input[data-f="w"]')].every(x=>x.value);
       if(filled) card.classList.add("fold");   // done → collapse; header tap re-opens
     });
+  });
+  // 次數也要重算：達標判定看的是次數，不是只有重量
+  $("list").querySelectorAll("input[data-f='r']").forEach(inp=>{
+    inp.addEventListener("input", ()=>updateDelta(inp.dataset.ex));
   });
   $("list").querySelectorAll(".ex-h").forEach(h=>{ h.onclick = ()=>h.parentElement.classList.toggle("fold"); });
   renderGoals();
@@ -1086,6 +1100,15 @@ function renderEdit(){
   };
 }
 
+/* 今天這個動作有沒有賺到下次的加重：三組都填、且每組都做滿 REP_GOAL 下 */
+function earnedToday(i){
+  const rows = [0,1,2].map(n=>({
+    w: parseFloat(($("list").querySelector('input[data-ex="'+i+'"][data-set="'+n+'"][data-f="w"]')||{}).value),
+    r: parseFloat(($("list").querySelector('input[data-ex="'+i+'"][data-set="'+n+'"][data-f="r"]')||{}).value)
+  }));
+  return rows.every(x => !isNaN(x.w) && x.r >= REP_GOAL);
+}
+
 function updateDelta(i){
   const vals=[...$("list").querySelectorAll('input[data-ex="'+i+'"][data-f="w"]')]
     .map(x=>parseFloat(x.value)).filter(v=>!isNaN(v));
@@ -1095,19 +1118,19 @@ function updateDelta(i){
   if(goal){ const hit = vals.length >= 3;
     goal.classList.toggle("hit", hit);
     const sr = goal.querySelector("[data-sr]"); if(sr) sr.textContent = hit ? "（已完成）" : ""; }
-  const chip = $("list").querySelector('.delta[data-i="'+i+'"]'); if(!chip) return;
   const done = $("list").querySelector('.done[data-i="'+i+'"]');
+  if(done){ const ok = earnedToday(i);
+    done.textContent = ok ? "達標！三組滿 "+REP_GOAL+" 下，下次 +"+TARGET_STEP+" kg" : "";
+    done.classList.toggle("show", ok); }
+  const chip = $("list").querySelector('.delta[data-i="'+i+'"]'); if(!chip) return;
   const p = lastBest(i); if(!p) return;
-  if(!vals.length){ chip.className="delta"; chip.textContent="今天？";
-    if(done) done.classList.remove("show"); return; }
+  if(!vals.length){ chip.className="delta"; chip.textContent="今天？"; return; }
   const diff = Math.max(...vals) - parseFloat(p.w);
   // 第一組本來就該比上次輕（熱身組），三組填完前不要判「退步」——那是設計好的 ramp，不是退步
-  if(diff<0 && vals.length<3){ chip.className="delta"; chip.textContent="進行中";
-    if(done) done.classList.remove("show"); return; }
+  if(diff<0 && vals.length<3){ chip.className="delta"; chip.textContent="進行中"; return; }
   if(diff>0){ chip.className="delta up"; chip.textContent="↑ +"+(+diff.toFixed(1)); }
   else if(diff===0){ chip.className="delta same"; chip.textContent="持平"; }
   else { chip.className="delta down"; chip.textContent="↓ "+(+diff.toFixed(1)); }
-  if(done) done.classList.toggle("show", diff>0);
 }
 
 function renderHist(){
