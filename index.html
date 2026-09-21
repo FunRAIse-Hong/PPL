@@ -102,6 +102,8 @@
   .delta.down{background:color-mix(in oklab,var(--down) 14%,var(--panel-2));color:var(--down)}
   .delta.same{color:var(--dim)}
   .sub{font-size:13px;color:var(--dim);padding:5px 16px 0;font-variant-numeric:tabular-nums}
+  /* 窄螢幕讓兩個區塊整塊換行，不要把「（08-07）」拆成兩行 */
+  .sub span{white-space:nowrap}
   .sparkrow{position:relative;margin:6px 16px 0;height:52px;padding-right:46px}
   .spark{display:block;width:100%;height:100%}
   .sparklabel{position:absolute;right:0;font-family:var(--mono);font-size:12px;color:var(--dim);
@@ -297,7 +299,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       </ul>
     </div>
     <!-- stamped by .githooks/pre-commit on every commit that touches index.html -->
-    <div class="ver">版本 <span id="ver">2026-09-01 16:33</span></div>
+    <div class="ver">版本 <span id="ver">2026-09-21 11:34</span></div>
   </div>
 
   <div class="savebar"><div class="inner">
@@ -919,18 +921,25 @@ window.addEventListener("touchend", e=>{
   const i = DAY_KEYS.indexOf(day);
   switchDay(DAY_KEYS[(i + (dx < 0 ? 1 : 2)) % 3]);
 }, {passive:true});
-/* sessions relative to the selected 訓練日期: the one being edited (if saved) and the one before it */
-function sessionCtx(){
-  const arr = state[day];
+/* the session being edited, if the selected 訓練日期 was already saved */
+function curSession(){
   const sel = $("date").value || todayStr();
-  const idx = arr.findIndex(s=>s.date===sel);
-  const before = arr.filter(s=>s.date<sel);
-  return { cur: idx>=0 ? arr[idx] : null,
-           prev: before.length ? before[before.length-1] : null };
+  return (state[day]||[]).find(s=>s.date===sel) || null;
 }
 function bestOf(sets){
   const v=(sets||[]).filter(s=>s&&s.w); if(!v.length) return null;
   return v.reduce((a,b)=> parseFloat(b.w)>parseFloat(a.w)?b:a);
+}
+/* 每個動作各自往回找最近一次有做的紀錄——上次跳過蝴蝶機，不該退回「試重量」。
+   回傳值多帶 date 與 stale（不是最近一次訓練時為 true，UI 標出是哪天的）。 */
+function lastBest(i){
+  const sel = $("date").value || todayStr();
+  const before = (state[day]||[]).filter(s=>s.date<sel);
+  for(let k=before.length-1; k>=0; k--){
+    const b = bestOf(before[k].data[i]);
+    if(b) return {...b, date: before[k].date, stale: k < before.length-1};
+  }
+  return null;
 }
 
 /* Progress sparkline: best-set weight per session, last 10 sessions.
@@ -960,15 +969,20 @@ function sparkline(i){
     '</svg><span class="sparklabel" style="top:'+Math.round(y(last.w)/H*52-6)+'px">'+last.w+'kg</span></div>';
 }
 
-/* suggested target = last best + smallest plate step */
+/* Ramp instead of one flat number: set 1 is a specific warm-up (~90%, RIR 4+),
+   set 2 matches last time, set 3 is the breakthrough (+step). TARGET_STEP 2.5kg
+   is ~2.5-10% at these loads, i.e. inside the usual 2-5% guidance except on the
+   lightest isolation work. ponytail: fixed step, go percentage-based if he ever
+   trains heavy enough for 2.5 to be noise. */
 const TARGET_STEP = 2.5;
-const targetOf = p => p ? +(parseFloat(p.w)+TARGET_STEP).toFixed(1) : null;
+const round25 = w => +(Math.round(w/2.5)*2.5).toFixed(1);
+const setTargets = w => [round25(w*0.9), +w.toFixed(1), round25(w + TARGET_STEP)];
+const targetOf = p => p ? setTargets(parseFloat(p.w))[2] : null;
 
 /* 今天的目標清單 — the first thing on screen */
 function renderGoals(){
-  const prev = ready ? sessionCtx().prev : null;
   $("goals").innerHTML = exList(day).map((e,i)=>{
-    const t = ready ? targetOf(prev ? bestOf(prev.data[i]) : null) : null;
+    const t = ready ? targetOf(lastBest(i)) : null;
     return '<button class="grow" data-i="'+i+'"><span class="gmark" aria-hidden="true">✓</span>'+
       '<span class="gname">'+esc(e.zh)+'<span class="sr-only" data-sr></span></span>'+
       '<span class="gtarget">'+(t!=null ? t+'<small>kg</small>' : (ready ? '試重量' : '–'))+'</span></button>';
@@ -991,14 +1005,16 @@ function render(){
   $("pagetitle").textContent = day === autoDay ? "今天的目標" : d.name+"日的目標";
   renderTabs();
   if(!ready){ $("list").innerHTML = '<div class="loading">載入中…</div>'; renderGoals(); return; }
-  const {cur, prev} = sessionCtx();
+  const cur = curSession();
 
   $("list").innerHTML = exList(day).map((e,i)=>{
-    const p = prev ? bestOf(prev.data[i]) : null;
+    const p = lastBest(i);
+    const ramp = p ? setTargets(parseFloat(p.w)) : null;
     const bigTxt = p
-      ? '<div class="big"><span class="glabel">目標</span><span class="w">'+targetOf(p)+'<small>kg</small></span>'+
+      ? '<div class="big"><span class="glabel">目標</span><span class="w">'+ramp[2]+'<small>kg</small></span>'+
         '<span class="delta" data-i="'+i+'">今天？</span></div>'+
-        '<div class="sub">上次最重 '+p.w+' kg × '+(p.r||"–")+'</div>'
+        '<div class="sub"><span>'+ramp.join(" → ")+' kg</span>　・　<span>上次最重 '+p.w+' kg × '+(p.r||"–")+
+        (p.stale ? '（'+p.date.slice(5)+'）' : '')+'</span></div>'
       : '<div class="big"><span class="glabel">目標</span><span class="w">–<small>kg</small></span></div>'+
         '<div class="sub">尚無紀錄，先試出一個 RIR 2 的重量</div>';
     return '<div class="ex"><div class="ex-h">'+ICONS[e.icon]+
@@ -1012,7 +1028,7 @@ function render(){
         const cs = cur && cur.data[i] ? cur.data[i][n-1] : null;   // saved set for the selected date
         return '<div class="set"><div class="set-n">'+n+'</div>'+
         '<div class="field"><input type="number" inputmode="decimal" step="0.5" min="0" placeholder="'+
-          (p?p.w:"–")+'"'+(cs&&cs.w?' value="'+cs.w+'"':'')+' data-ex="'+i+'" data-set="'+(n-1)+'" data-f="w"><span class="u">kg</span></div>'+
+          (ramp?ramp[n-1]:"–")+'"'+(cs&&cs.w?' value="'+cs.w+'"':'')+' data-ex="'+i+'" data-set="'+(n-1)+'" data-f="w"><span class="u">kg</span></div>'+
         '<div class="field"><input type="number" inputmode="numeric" step="1" min="0" value="'+
           (cs&&cs.r?cs.r:"10")+'" data-ex="'+i+'" data-set="'+(n-1)+'" data-f="r"><span class="u">下</span></div>'+
         '</div>';}).join("")+'</div>'+
@@ -1071,20 +1087,23 @@ function renderEdit(){
 }
 
 function updateDelta(i){
-  const chip = $("list").querySelector('.delta[data-i="'+i+'"]'); if(!chip) return;
-  const prev = sessionCtx().prev; const p = prev ? bestOf(prev.data[i]) : null;
   const vals=[...$("list").querySelectorAll('input[data-ex="'+i+'"][data-f="w"]')]
     .map(x=>parseFloat(x.value)).filter(v=>!isNaN(v));
-  const done = $("list").querySelector('.done[data-i="'+i+'"]');
+  // goal check = all three sets logged (done), not "beat last time" — the delta chip carries that verdict.
+  // 先打勾再管差異標籤：沒有歷史紀錄的動作根本沒有 .delta，不能因此跳過打勾
   const goal = $("goals").querySelector('.grow[data-i="'+i+'"]');
-  // goal check = all three sets logged (done), not "beat last time" — the delta chip carries that verdict
   if(goal){ const hit = vals.length >= 3;
     goal.classList.toggle("hit", hit);
     const sr = goal.querySelector("[data-sr]"); if(sr) sr.textContent = hit ? "（已完成）" : ""; }
-  if(!p) return;
+  const chip = $("list").querySelector('.delta[data-i="'+i+'"]'); if(!chip) return;
+  const done = $("list").querySelector('.done[data-i="'+i+'"]');
+  const p = lastBest(i); if(!p) return;
   if(!vals.length){ chip.className="delta"; chip.textContent="今天？";
     if(done) done.classList.remove("show"); return; }
   const diff = Math.max(...vals) - parseFloat(p.w);
+  // 第一組本來就該比上次輕（熱身組），三組填完前不要判「退步」——那是設計好的 ramp，不是退步
+  if(diff<0 && vals.length<3){ chip.className="delta"; chip.textContent="進行中";
+    if(done) done.classList.remove("show"); return; }
   if(diff>0){ chip.className="delta up"; chip.textContent="↑ +"+(+diff.toFixed(1)); }
   else if(diff===0){ chip.className="delta same"; chip.textContent="持平"; }
   else { chip.className="delta down"; chip.textContent="↓ "+(+diff.toFixed(1)); }
