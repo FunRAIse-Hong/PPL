@@ -22,10 +22,11 @@ let selDate = "2026-09-21";
 const ctx = { day: "A", state: {A: []}, $: () => ({value: selDate}), todayStr: () => selDate };
 vm.createContext(ctx);
 vm.runInContext(
-  ["const REP_GOAL", "const TARGET_STEP", "const round25", "const topTarget",
+  ["const REP_GOAL", "const TARGET_STEP", "const round25", "const equiv", "const topTarget",
    "const setTargets", "const targetOf", "function bestOf(sets)", "function lastBest(i)"]
     .map(grab).join("\n") +
-  ";this.lastBest=lastBest;this.setTargets=setTargets;this.targetOf=targetOf;this.topTarget=topTarget;", ctx);
+  ";this.lastBest=lastBest;this.setTargets=setTargets;this.targetOf=targetOf;" +
+  "this.topTarget=topTarget;this.equiv=equiv;", ctx);
 
 const sets = (...a) => a.map(([w,r]) => w == null ? null : {w:String(w), r:String(r)});
 const ramp = w => [...ctx.setTargets(w)];
@@ -53,11 +54,16 @@ assert.strictEqual(p.earned, true);
 assert.strictEqual(ctx.topTarget(p), 30);
 assert.deepStrictEqual(ramp(30), [25, 27.5, 30]);
 
-// 頂組只做到 8 下 → 沒賺到，頂組維持 27.5，這次把 10 下做滿
+// 頂組只做到 8 下 → 沒賺到，而且 27.5 對 10 下來說太重 → 降到 25
 p = only([[22.5,10],[25,10],[27.5,8]]);
 assert.strictEqual(p.earned, false);
-assert.strictEqual(ctx.topTarget(p), 27.5);
+assert.strictEqual(ctx.topTarget(p), 25);
 assert.deepStrictEqual(ramp(27.5), [22.5, 25, 27.5]);
+
+// 頂組差一下（9 下）→ 沒賺到，但也還沒到該降的程度 → 重做同重量
+p = only([[22.5,10],[25,10],[27.5,9]]);
+assert.strictEqual(p.earned, false);
+assert.strictEqual(ctx.topTarget(p), 27.5);
 
 // 只填兩組 → 沒做完，不算賺到
 p = only([[22.5,10],[25,10],[null]]);
@@ -80,6 +86,36 @@ assert.deepStrictEqual(ramp(2.5),  [2.5, 2.5, 2.5]);
 assert.strictEqual(ctx.targetOf(only([[25,10],[25,10],[25,10]])), 27.5);
 assert.strictEqual(ctx.targetOf(only([[25,10],[25,10],[25,7]])), 25);
 assert.strictEqual(ctx.targetOf(null), null);
+
+/* ---- 次數換算重量（Epley）：係數 = (30 + 上次次數) / 40 ---- */
+// 上次頂組 27.5 kg，次數不同 → 下次頂組
+// 照 App 開的 ramp 填：前兩組各輕一片、都滿 10 下，變數是頂組做到幾下
+const at = (w, reps) => ctx.topTarget(only([[w-5,10],[w-2.5,10],[w,reps]]));
+assert.strictEqual(at(27.5, 10), 30);     // 滿 10 下 → 晉級一片
+assert.strictEqual(at(27.5, 9),  27.5);   // 差一下 → 重做同重量
+assert.strictEqual(at(27.5, 8),  25);     // 差兩下 → 降一片
+assert.strictEqual(at(27.5, 6),  25);     // 力竭在 6 下 → 降一片
+assert.strictEqual(at(27.5, 13), 32.5);   // 超做 → 多賺一片
+// 同樣的規則在較重的負荷上
+assert.strictEqual(at(65, 10), 67.5);
+assert.strictEqual(at(65, 8),  62.5);
+assert.strictEqual(at(65, 6),  57.5);
+// 換算本身（未四捨五入、未加晉級的那一片）
+assert.strictEqual(+ctx.equiv(27.5, 10).toFixed(4), 27.5);
+assert.strictEqual(+ctx.equiv(27.5, 6).toFixed(4),  24.75);
+assert.strictEqual(+ctx.equiv(40, 20).toFixed(4),   50);
+// 次數沒填 → 不要憑空降重量
+assert.strictEqual(ctx.equiv(27.5, NaN), 27.5);
+assert.strictEqual(ctx.topTarget(only([[27.5,""],[27.5,""],[27.5,""]])), 27.5);
+
+/* ---- 同重量取次數最多那組，不是第一組 ---- */
+// 升序做 6 → 8 → 10：他其實做得到 27.5 × 10，不該被判定要降重量
+assert.strictEqual(only([[27.5,6],[27.5,8],[27.5,10]]).r, "10");
+assert.strictEqual(ctx.topTarget(only([[27.5,6],[27.5,8],[27.5,10]])), 27.5);
+// 降序照舊
+assert.strictEqual(only([[27.5,10],[27.5,8],[27.5,6]]).r, "10");
+// 比較重的那組永遠勝出，即使次數比較少
+assert.strictEqual(only([[25,15],[27.5,5],[22.5,12]]).w, "27.5");
 
 /* ---- 每個動作都是 3 × 10 ---- */
 const bad = [...src.matchAll(/target:"([^"]*)"/g)].map(m=>m[1]).filter(t => t && t !== "3 × 10");

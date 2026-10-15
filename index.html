@@ -299,7 +299,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       </ul>
     </div>
     <!-- stamped by .githooks/pre-commit on every commit that touches index.html -->
-    <div class="ver">版本 <span id="ver">2026-09-21 11:45</span></div>
+    <div class="ver">版本 <span id="ver">2026-10-15 09:55</span></div>
   </div>
 
   <div class="savebar"><div class="inner">
@@ -939,7 +939,11 @@ function lastBest(i){
   for(let k=before.length-1; k>=0; k--){
     const sets = (before[k].data[i]||[]).filter(x=>x&&x.w);
     if(!sets.length) continue;
-    const b = sets.reduce((x,y)=> parseFloat(y.w)>parseFloat(x.w)?y:x);
+    // 最重那組；同重量取次數最多的——他可能升序做 6→8→10，那組 10 下才是真實能力
+    const b = sets.reduce((x,y)=>{
+      const d = parseFloat(y.w) - parseFloat(x.w);
+      return d>0 || (d===0 && (parseFloat(y.r)||0) > (parseFloat(x.r)||0)) ? y : x;
+    });
     return {...b, date: before[k].date, stale: k < before.length-1,
             earned: sets.length>=3 && sets.every(x=>parseFloat(x.r)>=REP_GOAL)};
   }
@@ -973,19 +977,31 @@ function sparkline(i){
     '</svg><span class="sparklabel" style="top:'+Math.round(y(last.w)/H*52-6)+'px">'+last.w+'kg</span></div>';
 }
 
-/* 雙重漸進（double progression）：重量不會自己往上爬，要先把次數做滿才晉級。
-   上次三組都 REP_GOAL 下 → 頂組 +TARGET_STEP；沒做滿 → 頂組維持同重量，
-   這次的任務是把 10 下做滿。這是「無腦加重」的解法：加重要用次數換。
+/* 雙重漸進 + 次數換算重量。重量不會自己往上爬，而且會雙向修正：
+   先用 Epley（e1RM = w(1+r/30)）把上次頂組換算成「做得到 REP_GOAL 下」的重量，
+   再在三組都做滿時多加一片。係數 = (30+上次次數)/40，所以
+     13 下 → ×1.075（多賺）   10 下 → ×1.0（照常晉級）
+      9 下 → ×0.975（重做）    6 下 → ×0.90（降一片）
+   6 下剛好落在 90%，和 StrongLifts / Starting Strength 的 10% deload 幾乎一致，
+   只是一次到位、不用連續失敗三次——他一個分項一週才練一次，等不起三週。
    ramp：三組各差一片，頂組就是目標，所以第一組本來就輕（專項熱身）。
-   ponytail: fixed 2.5kg step — 在他 20-65kg 的負荷等於 4-12%，還在
-   ACSM 建議的 2-10% 內；真的練到很重再換成百分比。 */
+   ponytail: Epley 在 10 下附近已是驗證邊緣、器械又比槓鈴不準，它是合理插值
+   不是精密測量；真要更準得記 RIR，但那是刻意不做的（見 CONTEXT.md）。 */
 const REP_GOAL = 10;
 const TARGET_STEP = 2.5;
 const round25 = w => +(Math.round(w/2.5)*2.5).toFixed(1);
-const topTarget = p => round25(parseFloat(p.w) + (p.earned ? TARGET_STEP : 0));
+const equiv = (w,r) => r ? w*(30+r)/(30+REP_GOAL) : w;   // 次數沒填就不要憑空動重量
+const topTarget = p => round25(equiv(parseFloat(p.w), parseFloat(p.r))
+                               + (p.earned ? TARGET_STEP : 0));
 const setTargets = T => [Math.max(TARGET_STEP, T-2*TARGET_STEP),
                          Math.max(TARGET_STEP, T-TARGET_STEP), T];
 const targetOf = p => p ? topTarget(p) : null;
+
+/* 一句話交代重量為什麼動了（或為什麼沒動）。比較 T 與上次頂組就夠分三種情況 */
+const whyText = (p, T) =>
+    T > +p.w ? '上次 '+p.w+' kg 做到 '+p.r+' 下，進到 '+T+' kg'
+  : T < +p.w ? '上次 '+p.w+' kg 只到 '+p.r+' 下，先降到 '+T+' kg 做滿'
+  :            '維持 '+p.w+' kg，三組各 '+REP_GOAL+' 下就晉級';
 
 /* 今天的目標清單 — the first thing on screen */
 function renderGoals(){
@@ -1022,8 +1038,7 @@ function render(){
       ? '<div class="big"><span class="glabel">目標</span><span class="w">'+ramp[2]+'<small>kg</small></span>'+
         '<span class="delta" data-i="'+i+'">今天？</span></div>'+
         '<div class="sub"><span>'+ramp.join(" → ")+' kg</span>　・　<span>'+
-        (p.earned ? '上次 '+p.w+' kg 三組滿 '+REP_GOAL+' 下，晉級'
-                  : '維持 '+p.w+' kg，三組各 '+REP_GOAL+' 下就晉級')+
+        whyText(p, ramp[2])+
         (p.stale ? '（'+p.date.slice(5)+'）' : '')+'</span></div>'
       : '<div class="big"><span class="glabel">目標</span><span class="w">–<small>kg</small></span></div>'+
         '<div class="sub">尚無紀錄，先試出一個做得完 '+REP_GOAL+' 下的重量</div>';
@@ -1128,6 +1143,9 @@ function updateDelta(i){
   const diff = Math.max(...vals) - parseFloat(p.w);
   // 第一組本來就該比上次輕（熱身組），三組填完前不要判「退步」——那是設計好的 ramp，不是退步
   if(diff<0 && vals.length<3){ chip.className="delta"; chip.textContent="進行中"; return; }
+  // 上次沒做滿、App 自己把目標調低時，照著做也不是退步
+  if(diff<0 && Math.max(...vals) >= topTarget(p)){
+    chip.className="delta same"; chip.textContent="照表操課"; return; }
   if(diff>0){ chip.className="delta up"; chip.textContent="↑ +"+(+diff.toFixed(1)); }
   else if(diff===0){ chip.className="delta same"; chip.textContent="持平"; }
   else { chip.className="delta down"; chip.textContent="↓ "+(+diff.toFixed(1)); }
