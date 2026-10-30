@@ -7,3 +7,6 @@
 .impeccable/review/
 .impeccable/mocks/
 .playwright-mcp/
+
+# Hallmark redesign screenshots and run records (local only)
+.hallmark/
